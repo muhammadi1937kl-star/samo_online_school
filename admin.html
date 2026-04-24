@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Админ Панель — Давлатов Академия</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+<style>
+  :root {
+    --bg: #F4F6F9;
+    --surface: #FFFFFF;
+    --surface2: #F8F9FB;
+    --border: #E5E9EF;
+    --text: #1A1D23;
+    --text-muted: #6B7280;
+    --accent: #1E40AF;
+    --accent-light: #EFF6FF;
+    --gold: #B45309;
+    --gold-light: #FFFBEB;
+    --green: #065F46;
+    --green-light: #ECFDF5;
+    --red: #991B1B;
+    --red-light: #FEF2F2;
+    --orange: #92400E;
+    --orange-light: #FFFBEB;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Manrope', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: 240px; flex-shrink: 0;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    position: fixed; top: 0; left: 0; bottom: 0;
+    z-index: 50;
+  }
+  .sidebar-logo {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .sidebar-logo h1 {
+    font-size: 15px; font-weight: 700;
+    color: var(--accent); letter-spacing: -0.01em;
+  }
+  .sidebar-logo p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+  .sidebar-nav { flex: 1; padding: 12px 10px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    color: var(--text-muted); transition: all 0.15s;
+    margin-bottom: 2px;
+  }
+  .nav-item:hover { background: var(--bg); color: var(--text); }
+  .nav-item.active { background: var(--accent-light); color: var(--accent); }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .sidebar-user {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .sidebar-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--accent-light); border: 2px solid var(--border);
+    object-fit: cover; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--accent);
+  }
+  .sidebar-user-info { flex: 1; min-width: 0; }
+  .sidebar-user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sidebar-user-role { font-size: 11px; color: var(--text-muted); }
+
+  /* MAIN */
+  .main { margin-left: 240px; flex: 1; min-height: 100vh; }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px; height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .topbar h2 { font-size: 18px; font-weight: 700; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+  .btn {
+    padding: 8px 18px; border-radius: 7px; font-size: 13px;
+    font-weight: 600; cursor: pointer; border: none; transition: all 0.15s;
+    font-family: 'Manrope', sans-serif;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1D3FAB; }
+  .btn-danger { background: var(--red-light); color: var(--red); }
+  .btn-danger:hover { background: #FEE2E2; }
+  .btn-success { background: var(--green-light); color: var(--green); }
+  .btn-success:hover { background: #D1FAE5; }
+  .btn-ghost { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--bg); }
+
+  /* CONTENT */
+  .content { padding: 28px 32px; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px;
+  }
+  .stat-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .stat-num { font-size: 28px; font-weight: 700; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+  /* TABLE */
+  .table-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .table-header h3 { font-size: 15px; font-weight: 700; }
+  .search-input {
+    padding: 7px 14px; border-radius: 7px; font-size: 13px;
+    border: 1px solid var(--border); background: var(--bg);
+    color: var(--text); font-family: 'Manrope', sans-serif;
+    width: 220px; outline: none;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .filter-tabs { display: flex; gap: 4px; }
+  .filter-tab {
+    padding: 5px 14px; border-radius: 6px; font-size: 12px;
+    font-weight: 600; cursor: pointer; transition: all 0.15s;
+    color: var(--text-muted); background: transparent; border: none;
+  }
+  .filter-tab.active { background: var(--accent-light); color: var(--accent); }
+  .filter-tab:hover:not(.active) { background: var(--bg); }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 12px 24px; background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 14px 24px; font-size: 13px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+
+  .user-cell { display: flex; align-items: center; gap: 10px; }
+  .user-thumb {
+    width: 32px; height: 32px; border-radius: 50%;
+    object-fit: cover; border: 2px solid var(--border);
+    flex-shrink: 0; background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--accent);
+  }
+  .user-thumb img { width: 100%; height: 100%; border-radius: 50%; }
+  .user-cell-name { font-weight: 600; font-size: 13px; }
+  .user-cell-email { font-size: 11px; color: var(--text-muted); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  }
+  .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .badge-pending { background: var(--orange-light); color: var(--orange); }
+  .badge-pending .badge-dot { background: var(--orange); }
+  .badge-approved { background: var(--green-light); color: var(--green); }
+  .badge-approved .badge-dot { background: var(--green); }
+  .badge-revoked { background: var(--red-light); color: var(--red); }
+  .badge-revoked .badge-dot { background: var(--red); }
+
+  .actions { display: flex; gap: 6px; }
+
+  .mono { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); }
+
+  .empty-state {
+    padding: 60px 24px; text-align: center;
+    color: var(--text-muted); font-size: 14px;
+  }
+  .empty-state svg { width: 48px; height: 48px; fill: var(--border); margin-bottom: 12px; }
+
+  /* LOGIN SCREEN */
+  #loginScreen {
+    position: fixed; inset: 0; z-index: 200;
+    background: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 48px; text-align: center;
+    width: 400px; max-width: 95vw;
+  }
+  .login-logo { font-size: 42px; margin-bottom: 16px; }
+  .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.5; }
+  .btn-google {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    width: 100%; padding: 13px; border-radius: 8px;
+    background: #fff; color: #3c4043;
+    font-size: 15px; font-weight: 600; font-family: 'Manrope', sans-serif;
+    border: 1px solid var(--border); cursor: pointer; transition: background 0.2s;
+  }
+  .btn-google:hover { background: #f1f3f4; }
+  .btn-google img { width: 20px; height: 20px; }
+  .login-error {
+    color: var(--red); font-size: 13px; margin-top: 14px; display: none;
+  }
+
+  /* MODAL */
+  .modal-bg {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-bg.active { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 32px; width: 440px; max-width: 95vw;
+    position: relative;
+  }
+  .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .modal p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5; }
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: transparent; border: none; font-size: 20px;
+    color: var(--text-muted); cursor: pointer;
+  }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+  /* DATETIME PICKER */
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 6px; }
+  .form-input {
+    width: 100%; padding: 9px 12px; border-radius: 7px;
+    border: 1px solid var(--border); font-family: 'Manrope', sans-serif;
+    font-size: 13px; color: var(--text); background: var(--bg); outline: none;
+  }
+  .form-input:focus { border-color: var(--accent); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; z-index: 999;
+    background: var(--text); color: #fff;
+    border-radius: 8px; padding: 12px 20px;
+    font-size: 13px; font-weight: 500;
+    transform: translateY(20px); opacity: 0;
+    transition: all 0.3s; pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--green); }
+  .toast.error { background: var(--red); }
+
+  /* SPINNER */
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff; border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-row td { text-align: center; color: var(--text-muted); padding: 40px; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">🛡️</div>
+    <h2>Вход для администраторов</h2>
+    <p>Только авторизованные администраторы имеют доступ к этой панели. Войдите через Google аккаунт администратора.</p>
+    <button class="btn-google" onclick="adminSignIn()">
+      <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+      Войти через Google
+    </button>
+    <p class="login-error" id="loginError">⛔ У вас нет прав администратора.</p>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <h1>🎓 Давлатов Академия</h1>
+    <p>Панель администратора</p>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-item active" onclick="switchTab('users')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+      Пользователи
+    </div>
+    <div class="nav-item" onclick="switchTab('stats')">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+      Статистика
+    </div>
+  </div>
+  <div class="sidebar-user">
+    <div class="sidebar-avatar" id="sidebarAvatar">A</div>
+    <div class="sidebar-user-info">
+      <div class="sidebar-user-name" id="sidebarName">Администратор</div>
+      <div class="sidebar-user-role">Admin</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <h2 id="tabTitle">Управление пользователями</h2>
+    <div class="topbar-right">
+      <button class="btn btn-ghost" onclick="loadUsers()">↺ Обновить</button>
+      <button class="btn btn-ghost" onclick="adminSignOut()">Выйти</button>
+    </div>
+  </div>
+
+  <!-- USERS TAB -->
+  <div class="content" id="usersTab">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Всего</div>
+        <div class="stat-num" id="statTotal">—</div>
+        <div class="stat-sub">пользователей</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Ожидают</div>
+        <div class="stat-num" id="statPending" style="color: var(--orange);">—</div>
+        <div class="stat-sub">заявок</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Активных</div>
+        <div class="stat-num" id="statApproved" style="color: var(--green);">—</div>
+        <div class="stat-sub">с доступом</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Заблокировано</div>
+        <div class="stat-num" id="statRevoked" style="color: var(--red);">—</div>
+        <div class="stat-sub">пользователей</div>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <div class="table-header">
+        <h3>Список пользователей</h3>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <input type="text" class="search-input" placeholder="Поиск по имени или email..." oninput="filterUsers(this.value)" />
+          <div class="filter-tabs">
+            <button class="filter-tab active" onclick="setFilter('all', this)">Все</button>
+            <button class="filter-tab" onclick="setFilter('pending', this)">Ожидают</button>
+            <button class="filter-tab" onclick="setFilter('approved', this)">Активные</button>
+            <button class="filter-tab" onclick="setFilter('revoked', this)">Закрыты</button>
+          </div>
+        </div>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Пользователь</th>
+            <th>Статус</th>
+            <th>Зарегистрирован</th>
+            <th>Последний вход</th>
+            <th>Доступ до</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody id="usersTableBody">
+          <tr class="loading-row"><td colspan="6">Загрузка...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div class="content" id="statsTab" style="display:none;">
+    <div class="table-section" style="padding:32px;">
+      <h3 style="margin-bottom:8px;">Последние действия</h3>
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">История выдачи и отзыва доступов</p>
+      <div id="activityLog" style="font-size:13px;color:var(--text-muted);">Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVE MODAL -->
+<div class="modal-bg" id="approveModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('approveModal')">✕</button>
+    <h3>✅ Открыть доступ</h3>
+    <p id="approveModalDesc">Откройте доступ пользователю к урокам.</p>
+    <div class="form-group">
+      <label class="form-label">Доступ до (необязательно)</label>
+      <input type="datetime-local" class="form-input" id="accessUntil" />
+      <p style="font-size:11px;color:var(--text-muted);margin-top:4px;">Оставьте пустым для бессрочного доступа</p>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('approveModal')">Отмена</button>
+      <button class="btn btn-success" onclick="confirmApprove()">Открыть доступ</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVOKE MODAL -->
+<div class="modal-bg" id="revokeModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('revokeModal')">✕</button>
+    <h3>🚫 Закрыть доступ</h3>
+    <p id="revokeModalDesc">Вы уверены, что хотите закрыть доступ?</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('revokeModal')">Отмена</button>
+      <button class="btn btn-danger" onclick="confirmRevoke()">Закрыть доступ</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// FIREBASE CONFIG — ТЕ ЖЕ ДАННЫЕ, ЧТО И В index.html
+// ============================================================
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// ============================================================
+// СПИСОК EMAIL АДМИНИСТРАТОРОВ — добавьте свои email адреса
+// ============================================================
+const ADMIN_EMAILS = [
+  'admin@example.com',
+  'saidmurod@example.com'
+  // добавьте сюда email адреса администраторов
+];
+// ============================================================
+
+let allUsers = [];
+let currentFilter = 'all';
+let searchQuery = '';
+let selectedUserId = null;
+let adminUser = null;
+
+// ─── AUTH ─────────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+  if (user && ADMIN_EMAILS.includes(user.email)) {
+    adminUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('sidebarName').textContent = user.displayName.split(' ')[0];
+    const av = document.getElementById('sidebarAvatar');
+    if (user.photoURL) {
+      av.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" />`;
+    } else {
+      av.textContent = user.displayName[0];
+    }
+    loadUsers();
+  } else if (user) {
+    // Signed in but not admin
+    document.getElementById('loginError').style.display = 'block';
+    auth.signOut();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginError').style.display = 'none';
+  }
+});
+
+function adminSignIn() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(e => showToast('Ошибка: ' + e.message, 'error'));
+}
+function adminSignOut() {
+  auth.signOut();
+}
+
+// ─── LOAD USERS ───────────────────────────────────────────
+async function loadUsers() {
+  const tbody = document.getElementById('usersTableBody');
+  tbody.innerHTML = '<tr class="loading-row"><td colspan="6"><div class="spinner" style="border-top-color:var(--accent);border-color:var(--border);"></div></td></tr>';
+
+  try {
+    const snap = await db.collection('users').orderBy('registeredAt', 'desc').get();
+    allUsers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    updateStats();
+    renderTable();
+  } catch (e) {
+    tbody.innerHTML = `<tr class="loading-row"><td colspan="6">Ошибка загрузки: ${e.message}</td></tr>`;
+  }
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allUsers.length;
+  document.getElementById('statPending').textContent = allUsers.filter(u => u.status === 'pending').length;
+  document.getElementById('statApproved').textContent = allUsers.filter(u => u.status === 'approved').length;
+  document.getElementById('statRevoked').textContent = allUsers.filter(u => u.status === 'revoked').length;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('usersTableBody');
+  let filtered = allUsers.filter(u => {
+    const matchFilter = currentFilter === 'all' || u.status === currentFilter;
+    const q = searchQuery.toLowerCase();
+    const matchSearch = !q || (u.name||'').toLowerCase().includes(q) || (u.email||'').toLowerCase().includes(q);
+    return matchFilter && matchSearch;
+  });
+
+  if (!filtered.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="6">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+          <p>Нет пользователей</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(u => {
+    const badgeClass = u.status === 'approved' ? 'badge-approved' : u.status === 'revoked' ? 'badge-revoked' : 'badge-pending';
+    const badgeLabel = u.status === 'approved' ? 'Активен' : u.status === 'revoked' ? 'Закрыт' : 'Ожидает';
+    const regDate = u.registeredAt ? formatDate(u.registeredAt) : '—';
+    const lastSeen = u.lastSeen ? formatDate(u.lastSeen) : '—';
+    const accessUntil = u.accessUntil ? formatDate(u.accessUntil) : (u.status === 'approved' ? 'Бессрочно' : '—');
+    const initials = (u.name || 'U').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+
+    // check if access expired
+    let expired = false;
+    if (u.status === 'approved' && u.accessUntil && new Date(u.accessUntil) < new Date()) {
+      expired = true;
+    }
+
+    return `
+      <tr>
+        <td>
+          <div class="user-cell">
+            <div class="user-thumb">${u.photo ? `<img src="${u.photo}" onerror="this.style.display='none'" />` : ''}${initials}</div>
+            <div>
+              <div class="user-cell-name">${u.name || 'Нет имени'}</div>
+              <div class="user-cell-email">${u.email || ''}</div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <span class="badge ${badgeClass}">
+            <span class="badge-dot"></span>
+            ${badgeLabel}${expired ? ' (истёк)' : ''}
+          </span>
+        </td>
+        <td class="mono">${regDate}</td>
+        <td class="mono">${lastSeen}</td>
+        <td class="mono" style="${expired ? 'color:var(--red);' : ''}">${accessUntil}</td>
+        <td>
+          <div class="actions">
+            ${u.status !== 'approved' ? `<button class="btn btn-success" onclick="openApproveModal('${u.id}', '${(u.name||'').replace(/'/g,"'")}')">Открыть</button>` : ''}
+            ${u.status === 'approved' ? `<button class="btn btn-danger" onclick="openRevokeModal('${u.id}', '${(u.name||'').replace(/'/g,"'")}')">Закрыть</button>` : ''}
+            ${u.status === 'revoked' ? `<button class="btn btn-ghost" onclick="openApproveModal('${u.id}', '${(u.name||'').replace(/'/g,"'")}')">Открыть снова</button>` : ''}
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function filterUsers(q) {
+  searchQuery = q;
+  renderTable();
+}
+function setFilter(f, el) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderTable();
+}
+
+// ─── APPROVE ──────────────────────────────────────────────
+function openApproveModal(uid, name) {
+  selectedUserId = uid;
+  document.getElementById('approveModalDesc').textContent = `Открыть доступ к урокам для: ${name}`;
+  document.getElementById('accessUntil').value = '';
+  openModal('approveModal');
+}
+async function confirmApprove() {
+  if (!selectedUserId) return;
+  const untilVal = document.getElementById('accessUntil').value;
+  const updateData = {
+    status: 'approved',
+    accessGrantedAt: new Date().toISOString(),
+    accessGrantedBy: adminUser.email,
+    accessUntil: untilVal ? new Date(untilVal).toISOString() : null,
+    accessRevokedAt: null
+  };
+  try {
+    await db.collection('users').doc(selectedUserId).update(updateData);
+    await logAction('approve', selectedUserId, untilVal || 'бессрочно');
+    closeModal('approveModal');
+    showToast('Доступ открыт ✅', 'success');
+    loadUsers();
+  } catch (e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  }
+}
+
+// ─── REVOKE ───────────────────────────────────────────────
+function openRevokeModal(uid, name) {
+  selectedUserId = uid;
+  document.getElementById('revokeModalDesc').textContent = `Закрыть доступ к урокам для: ${name}. Это действие можно отменить.`;
+  openModal('revokeModal');
+}
+async function confirmRevoke() {
+  if (!selectedUserId) return;
+  try {
+    await db.collection('users').doc(selectedUserId).update({
+      status: 'revoked',
+      accessRevokedAt: new Date().toISOString(),
+      accessRevokedBy: adminUser.email
+    });
+    await logAction('revoke', selectedUserId);
+    closeModal('revokeModal');
+    showToast('Доступ закрыт 🚫', 'error');
+    loadUsers();
+  } catch (e) {
+    showToast('Ошибка: ' + e.message, 'error');
+  }
+}
+
+// ─── ACTIVITY LOG ─────────────────────────────────────────
+async function logAction(action, userId, detail = '') {
+  await db.collection('activity').add({
+    action, userId, detail,
+    adminEmail: adminUser.email,
+    adminName: adminUser.displayName,
+    timestamp: new Date().toISOString()
+  });
+}
+
+async function loadActivityLog() {
+  const snap = await db.collection('activity').orderBy('timestamp', 'desc').limit(50).get();
+  const logEl = document.getElementById('activityLog');
+  if (snap.empty) { logEl.textContent = 'Нет записей.'; return; }
+
+  logEl.innerHTML = snap.docs.map(d => {
+    const data = d.data();
+    const action = data.action === 'approve' ? '✅ Открыт доступ' : '🚫 Закрыт доступ';
+    const user = allUsers.find(u => u.id === data.userId);
+    const userName = user ? user.name : data.userId;
+    return `
+      <div style="padding:12px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;">
+        <span style="font-size:18px;">${data.action === 'approve' ? '✅' : '🚫'}</span>
+        <div>
+          <p style="color:var(--text);font-weight:500;">${action} — ${userName || '—'}</p>
+          <p style="font-size:11px;color:var(--text-muted);">${data.adminName} • ${formatDate(data.timestamp)}${data.detail ? ' • до ' + formatDate(data.detail) : ''}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── AUTO-REVOKE CHECK ────────────────────────────────────
+async function checkExpiredAccess() {
+  const now = new Date().toISOString();
+  const snap = await db.collection('users')
+    .where('status', '==', 'approved')
+    .get();
+  const batch = db.batch();
+  let count = 0;
+  snap.docs.forEach(doc => {
+    const data = doc.data();
+    if (data.accessUntil && data.accessUntil < now) {
+      batch.update(doc.ref, { status: 'revoked', accessRevokedAt: now, accessRevokedBy: 'auto' });
+      count++;
+    }
+  });
+  if (count > 0) {
+    await batch.commit();
+    showToast(`Автоматически закрыт доступ: ${count} пользователей`, 'error');
+    loadUsers();
+  }
+}
+
+// ─── TABS ─────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+
+  document.getElementById('usersTab').style.display = tab === 'users' ? '' : 'none';
+  document.getElementById('statsTab').style.display = tab === 'stats' ? '' : 'none';
+  document.getElementById('tabTitle').textContent = tab === 'users' ? 'Управление пользователями' : 'Статистика';
+
+  if (tab === 'stats') loadActivityLog();
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleString('ru-RU', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+}
+
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) closeModal(m.id); });
+});
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+// Check expired access every 5 minutes
+setInterval(checkExpiredAccess, 5 * 60 * 1000);
+</script>
+</body>
+</html>
