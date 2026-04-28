@@ -345,7 +345,8 @@ async function openLesson() {
 
     // Открываем Apps Script URL — он сам перенаправит на Google Vids
     // Клиент видит только URL Apps Script, не Google Vids
-    window.open(redirectUrl, '_blank');
+    // window.open(redirectUrl, '_blank');
+    window.location.href = redirectUrl;
 
   } catch(e) {
     alert('Ошибка соединения. Проверьте интернет.');
