@@ -6,25 +6,21 @@
 <title>Саидмурод Давлатов — Онлайн Уроки</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-  /* =====================================================
-     ЦВЕТА — меняй здесь если хочешь другую тему
-  ===================================================== */
   :root {
-    --gold:     #C9A84C;
-    --gold-l:   #F0D080;
-    --dark:     #0E0E12;
-    --dark2:    #16161C;
-    --dark3:    #1E1E28;
-    --card:     #1A1A24;
-    --text:     #F4F0E8;
-    --muted:    #9090A0;
-    --green:    #2ECC71;
-    --red:      #E74C3C;
+    --gold:   #C9A84C;
+    --gold-l: #F0D080;
+    --dark:   #0E0E12;
+    --dark2:  #16161C;
+    --dark3:  #1E1E28;
+    --card:   #1A1A24;
+    --text:   #F4F0E8;
+    --muted:  #9090A0;
+    --green:  #2ECC71;
+    --red:    #E74C3C;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Nunito',sans-serif; background:var(--dark); color:var(--text); min-height:100vh; }
 
-  /* ── ШАПКА ── */
   header {
     background:var(--dark2);
     border-bottom:1px solid rgba(201,168,76,.2);
@@ -43,12 +39,11 @@
   }
   #userName { font-size:.9rem; font-weight:600; }
   .btn { padding:.5rem 1.2rem; border-radius:8px; font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:600; cursor:pointer; transition:all .2s; border:none; }
-  .btn-gold  { background:var(--gold); color:var(--dark); }
-  .btn-gold:hover  { background:var(--gold-l); transform:translateY(-1px); }
+  .btn-gold { background:var(--gold); color:var(--dark); }
+  .btn-gold:hover { background:var(--gold-l); transform:translateY(-1px); }
   .btn-ghost { background:rgba(255,255,255,.05); color:var(--muted); border:1px solid rgba(255,255,255,.08); }
   .btn-ghost:hover { color:var(--text); background:rgba(255,255,255,.09); }
 
-  /* ── ГЕРОЙ ── */
   .hero {
     text-align:center; padding:5rem 2rem 3rem;
     background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.08) 0%,transparent 70%);
@@ -63,6 +58,7 @@
   .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; line-height:1.15; margin-bottom:1rem; }
   .hero h1 em { font-style:normal; color:var(--gold); }
   .hero p { color:var(--muted); font-size:1.05rem; max-width:520px; margin:0 auto 2rem; line-height:1.7; }
+
   #statusBar {
     display:none; align-items:center; gap:.6rem;
     background:rgba(46,204,113,.1); border:1px solid rgba(46,204,113,.3);
@@ -73,10 +69,9 @@
   #statusBar.show { display:flex; }
   .dot { width:8px; height:8px; border-radius:50%; background:currentColor; flex-shrink:0; }
 
-  /* ── КАРТОЧКИ УРОКОВ ── */
   .lessons-section { padding:2rem 2rem 5rem; max-width:1200px; margin:0 auto; }
   .sec-title { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; text-align:center; margin-bottom:.4rem; }
-  .sec-sub   { text-align:center; color:var(--muted); margin-bottom:2.5rem; font-size:.95rem; }
+  .sec-sub { text-align:center; color:var(--muted); margin-bottom:2.5rem; font-size:.95rem; }
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.5rem; }
 
   .card {
@@ -87,40 +82,45 @@
   }
   .card:hover { transform:translateY(-4px); border-color:rgba(201,168,76,.3); }
 
-  /* Обложка урока — либо картинка, либо эмодзи */
   .thumb {
     width:100%; height:175px;
     display:flex; align-items:center; justify-content:center; font-size:3.2rem;
     background:linear-gradient(135deg,var(--dark3),#252535);
     position:relative; overflow:hidden;
   }
-  .thumb img {
-    /* Если задана картинка — она заполняет всю обложку */
-    position:absolute; inset:0;
-    width:100%; height:100%; object-fit:cover;
-  }
-  /* Затемнение поверх картинки чтобы значки читались */
-  .thumb-overlay {
-    position:absolute; inset:0;
-    background:linear-gradient(to bottom, rgba(0,0,0,.35) 0%, rgba(0,0,0,.1) 60%);
-  }
+  /* Если задана картинка-афиша — она заполняет обложку */
+  .thumb img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .thumb-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,.4) 0%,rgba(0,0,0,.1) 60%); }
 
   .badge { position:absolute; top:12px; font-size:.72rem; font-weight:700; border-radius:7px; padding:3px 10px; z-index:2; }
-  .b-num  { left:12px; background:var(--gold); color:var(--dark); }
+  .b-num { left:12px; background:var(--gold); color:var(--dark); }
   .b-lock { right:12px; background:rgba(14,14,18,.85); border:1px solid rgba(255,255,255,.15); color:var(--muted); backdrop-filter:blur(4px); }
   .b-lock.open { background:rgba(46,204,113,.2); border-color:rgba(46,204,113,.4); color:var(--green); }
 
   .card-body { padding:1.1rem 1.2rem 1.3rem; }
   .card-title { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; margin-bottom:.4rem; line-height:1.3; }
-  .card-desc  { color:var(--muted); font-size:.83rem; line-height:1.5; margin-bottom:1rem; }
-  .card-btn { width:100%; padding:.6rem; border-radius:8px; font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; }
-  .cb-login  { background:var(--gold); color:var(--dark); }
-  .cb-login:hover  { background:var(--gold-l); }
-  .cb-play   { background:rgba(46,204,113,.15); color:var(--green); border:1px solid rgba(46,204,113,.3); }
-  .cb-play:hover   { background:rgba(46,204,113,.25); }
+  .card-desc { color:var(--muted); font-size:.83rem; line-height:1.5; margin-bottom:1rem; }
+  .card-btn {
+    width:100%; padding:.65rem; border-radius:8px;
+    font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:700;
+    cursor:pointer; border:none; transition:all .2s;
+    display:flex; align-items:center; justify-content:center; gap:.5rem;
+  }
+  .cb-login { background:var(--gold); color:var(--dark); }
+  .cb-login:hover { background:var(--gold-l); }
+  .cb-play { background:rgba(46,204,113,.15); color:var(--green); border:1px solid rgba(46,204,113,.3); }
+  .cb-play:hover { background:rgba(46,204,113,.25); }
+  .cb-play:disabled { opacity:.6; cursor:wait; }
   .cb-locked { background:transparent; border:1px solid rgba(255,255,255,.08); color:var(--muted); cursor:default; }
 
-  /* ── МОДАЛКИ ── */
+  .btn-spinner {
+    width:14px; height:14px; border-radius:50%;
+    border:2px solid rgba(46,204,113,.3); border-top-color:var(--green);
+    animation:spin .7s linear infinite; flex-shrink:0;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* МОДАЛКА ЛОГИНА */
   .overlay { position:fixed; inset:0; background:rgba(0,0,0,.85); z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; }
   .overlay.show { display:flex; }
   .modal {
@@ -134,8 +134,7 @@
   .mclose:hover { color:var(--text); }
   .micon { font-size:2.8rem; margin-bottom:1rem; }
   .modal h2 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:.6rem; }
-  .msub  { color:var(--muted); font-size:.88rem; line-height:1.6; margin-bottom:1.4rem; }
-
+  .msub { color:var(--muted); font-size:.88rem; line-height:1.6; margin-bottom:1.4rem; }
   .field { margin-bottom:1rem; text-align:left; }
   .field label { display:block; font-size:.78rem; font-weight:700; color:var(--muted); margin-bottom:.4rem; letter-spacing:.5px; text-transform:uppercase; }
   .field input {
@@ -162,34 +161,7 @@
   .sbtn:hover { background:var(--gold-l); transform:translateY(-1px); }
   .sbtn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
 
-  /* Видео-модалка */
-  .vmodal { max-width:820px; padding:0; text-align:left; }
-  .vmh { display:flex; align-items:center; justify-content:space-between; padding:1.2rem 1.5rem; border-bottom:1px solid rgba(255,255,255,.07); }
-  .vmh h3 { font-family:'Playfair Display',serif; font-size:1.05rem; }
-  .vmb { padding:1.4rem; }
-  .vembed { width:100%; aspect-ratio:16/9; border-radius:10px; overflow:hidden; background:#000; }
-  .vembed iframe { width:100%; height:100%; border:none; }
-
-  /* Спиннер загрузки видео */
-  .vloading {
-    width:100%; aspect-ratio:16/9; border-radius:10px;
-    background:var(--dark3);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem;
-    color:var(--muted); font-size:.9rem;
-  }
-  .spinner {
-    width:40px; height:40px; border-radius:50%;
-    border:3px solid rgba(201,168,76,.2);
-    border-top-color:var(--gold);
-    animation:spin .8s linear infinite;
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
-
-  /* Инфо-блок (нет доступа) */
-  .ibox { background:rgba(201,168,76,.07); border:1px solid rgba(201,168,76,.18); border-radius:12px; padding:1.4rem; }
-  .ibox h4 { color:var(--gold); margin-bottom:.5rem; font-size:.95rem; }
-  .ibox p  { color:var(--muted); font-size:.86rem; line-height:1.6; }
-
+  .denied-modal { max-width:400px; }
   footer { border-top:1px solid rgba(255,255,255,.06); padding:2rem; text-align:center; color:var(--muted); font-size:.85rem; }
 
   @media(max-width:600px){
@@ -201,7 +173,6 @@
 </head>
 <body>
 
-<!-- ════════ ШАПКА ════════ -->
 <header>
   <div class="logo">Давлатов <span>Академия</span></div>
   <div style="display:flex;align-items:center;gap:.8rem">
@@ -214,7 +185,6 @@
   </div>
 </header>
 
-<!-- ════════ ГЕРОЙ ════════ -->
 <div class="hero">
   <div class="hero-badge">🎓 Образовательная платформа</div>
   <h1>Уроки <em>Саидмурода</em><br>Давлатова</h1>
@@ -225,7 +195,6 @@
   </div>
 </div>
 
-<!-- ════════ УРОКИ ════════ -->
 <div class="lessons-section">
   <h2 class="sec-title">Программа обучения</h2>
   <p class="sec-sub">Войдите в аккаунт для просмотра уроков. Доступ выдаётся администратором.</p>
@@ -234,7 +203,7 @@
 
 <footer>© 2025 Давлатов Академия · Все права защищены</footer>
 
-<!-- ════════ МОДАЛКА: ЛОГИН ════════ -->
+<!-- МОДАЛКА: ЛОГИН -->
 <div class="overlay" id="loginModal">
   <div class="modal">
     <button class="mclose" onclick="closeModal('loginModal')">✕</button>
@@ -244,73 +213,41 @@
     <div id="loginErr"></div>
     <div class="field">
       <label>Логин</label>
-      <input type="text" id="iLogin" placeholder="your_login" autocomplete="username"
-             onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="text" id="iLogin" placeholder="your_login" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="field">
       <label>Пароль</label>
-      <input type="password" id="iPass" placeholder="••••••••" autocomplete="current-password"
-             onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="iPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <button class="sbtn" id="loginBtn2" onclick="doLogin()">Войти</button>
   </div>
 </div>
 
-<!-- ════════ МОДАЛКА: ВИДЕО ════════ -->
-<div class="overlay" id="videoModal">
-  <div class="modal vmodal">
-    <div class="vmh">
-      <h3 id="vmTitle"></h3>
-      <button class="mclose" onclick="closeModal('videoModal')">✕</button>
-    </div>
-    <div class="vmb"><div id="videoContent"></div></div>
+<!-- МОДАЛКА: НЕТ ДОСТУПА -->
+<div class="overlay" id="deniedModal">
+  <div class="modal denied-modal">
+    <button class="mclose" onclick="closeModal('deniedModal')">✕</button>
+    <div class="micon" id="deniedIcon">🚫</div>
+    <h2 id="deniedTitle">Доступ закрыт</h2>
+    <p class="msub" id="deniedText"></p>
+    <button class="sbtn" onclick="closeModal('deniedModal')" style="background:rgba(255,255,255,.08);color:var(--text);">Закрыть</button>
   </div>
 </div>
 
 <script>
-/*
-╔══════════════════════════════════════════════════════════════╗
-║               КАК РАБОТАЕТ ЗАЩИТА ВИДЕО                     ║
-║                                                              ║
-║  РАНЬШЕ (небезопасно):                                       ║
-║  Сайт → берёт ID видео прямо из кода → показывает iframe     ║
-║  Клиент мог скопировать ссылку и смотреть вечно             ║
-║                                                              ║
-║  ТЕПЕРЬ (безопасно):                                         ║
-║  Нажал ▶ → сайт спрашивает Apps Script:                     ║
-║    "У пользователя ali2025 есть доступ к уроку 3?"          ║
-║  Apps Script идёт в Google Sheets → проверяет прямо сейчас  ║
-║  ДА → возвращает ссылку на видео                             ║
-║  НЕТ (ты закрыл доступ) → возвращает ошибку                ║
-║                                                              ║
-║  Клиент никогда не видит прямую ссылку на видео!            ║
-║  Каждый раз при нажатии ▶ — новая проверка в таблице        ║
-╚══════════════════════════════════════════════════════════════╝
-*/
+// =====================================================
+// ШАГ 1 — ВСТАВЬ СЮДА URL СВОЕГО APPS SCRIPT
+// Получишь после деплоя (смотри инструкцию)
+// =====================================================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFvgu8HvedPs6nR91AH_aihiegthkoVU8tTAGJZccHSs9TfN3KivrLNGsnwhmNyl2z/exec';
 
-// ════════════════════════════════════════════════════════════
-// ШАГ 1: ВСТАВЬ СЮДА URL СВОЕГО GOOGLE APPS SCRIPT
-// (получишь после деплоя — смотри инструкцию SETUP.md)
-// ════════════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwe4-KRvI1I0bg8XeKWnx5AGnYsl6FRhZR1w0TzIr_3DcHpDayvYj0gCjSyF-UCjkAw/exec';
-
-
-// ════════════════════════════════════════════════════════════
-// ШАГ 2: ДАННЫЕ УРОКОВ
-//
-// img  — ссылка на твою афишу/обложку (URL картинки)
-//        Загрузи картинку в Google Drive → Поделиться →
-//        Получи прямую ссылку вида:
-//        https://drive.google.com/uc?id=XXXXXXXX
-//        Или используй любой хостинг картинок (imgbb.com и тд)
-//
-//        Если img = '' — покажет эмодзи на тёмном фоне
-//
-// vid  — НЕ НУЖНО МЕНЯТЬ! ID видео хранится только в
-//        Google Sheets (в колонке "Видео ID")
-//        Сайт НЕ знает ID видео заранее — он получает его
-//        от Apps Script только после проверки доступа
-// ════════════════════════════════════════════════════════════
+// =====================================================
+// ШАГ 2 — ДАННЫЕ УРОКОВ
+// img: ''        → показывает эмодзи
+// img: 'https://...' → показывает твою афишу
+// Ссылку на видео НЕ ПИШИ ЗДЕСЬ — она хранится
+// только в Google Sheets!
+// =====================================================
 const LESSONS = [
   { id:1, title:'Основы предпринимательского мышления', desc:'Как думает успешный предприниматель. Первый шаг к изменению жизни.',  emoji:'🧠', img:'8888.png' },
   { id:2, title:'Постановка целей и планирование',       desc:'Система целеполагания, которая работает. Практические инструменты.', emoji:'🎯', img:'9999.png' },
@@ -319,48 +256,23 @@ const LESSONS = [
   { id:5, title:'Продажи и переговоры',                  desc:'Техники продаж и искусство переговоров от практика.',                 emoji:'🤝', img:'3333.png' },
   { id:6, title:'Маркетинг и личный бренд',              desc:'Как создать сильный личный бренд и привлекать клиентов.',             emoji:'📢', img:'5555.png' },
   { id:7, title:'Лидерство и управление командой',       desc:'Качества настоящего лидера. Как мотивировать и вести за собой.',     emoji:'👑', img:'4444.png' },
-  { id:8, title:'Масштабирование бизнеса',               desc:'От малого бизнеса к системе. Делегирование и автоматизация.',         emoji:'🚀', img:'' },
+  { id:8, title:'Масштабирование бизнеса',               desc:'От малого бизнеса к системе. Делегирование и автоматизация.',         emoji:'🚀', img:'9999.png' },
 ];
-// Пример с картинкой:
-// { id:1, title:'...', desc:'...', emoji:'🧠',
-//   img:'https://drive.google.com/uc?id=1AbCdEfGhIjKlMnOpQrStUvWxYz' }
 
-
-// ════════════════════════════════════════════════════════════
-// СОСТОЯНИЕ ПРИЛОЖЕНИЯ
-// user хранится в sessionStorage — при закрытии вкладки
-// пользователь выходит автоматически (дополнительная защита)
-// ════════════════════════════════════════════════════════════
+// =====================================================
+// СОСТОЯНИЕ
+// =====================================================
 let user = null;
-// user выглядит так после входа:
-// { login: 'ali2025', name: 'Али Рахимов', lessons: [1,2,3] }
-// lessons — массив номеров уроков, к которым есть доступ
 
-
-// ════════════════════════════════════════════════════════════
-// ЗАПУСК — при загрузке страницы
-// ════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
-  // Проверяем: может пользователь уже входил в этой вкладке?
   const saved = sessionStorage.getItem('u');
-  if (saved) {
-    user = JSON.parse(saved);
-    refreshUI();
-  }
+  if (saved) { user = JSON.parse(saved); refreshUI(); }
   renderLessons();
 });
 
-
-// ════════════════════════════════════════════════════════════
-// ФУНКЦИЯ ВХОДА
-//
-// Что происходит:
-// 1. Берём логин и пароль из формы
-// 2. Отправляем в Apps Script: ?action=login&login=ali&pass=123
-// 3. Apps Script ищет в таблице строку с таким логином/паролем
-// 4. Если нашёл и статус 'active' → возвращает список уроков
-// 5. Сохраняем в sessionStorage и показываем уроки
-// ════════════════════════════════════════════════════════════
+// =====================================================
+// ЛОГИН
+// =====================================================
 async function doLogin() {
   const login = document.getElementById('iLogin').value.trim();
   const pass  = document.getElementById('iPass').value;
@@ -372,28 +284,21 @@ async function doLogin() {
   hideErr();
 
   try {
-    const url = `${SCRIPT_URL}?action=login`
-              + `&login=${encodeURIComponent(login)}`
-              + `&pass=${encodeURIComponent(pass)}`;
-
-    const res  = await fetch(url);
+    const res  = await fetch(`${SCRIPT_URL}?action=login&login=${encodeURIComponent(login)}&pass=${encodeURIComponent(pass)}`);
     const data = await res.json();
 
     if (data.ok) {
-      // ✅ Успешный вход
       user = { login: data.login, name: data.name, lessons: data.lessons || [] };
       sessionStorage.setItem('u', JSON.stringify(user));
       document.getElementById('iPass').value = '';
       closeModal('loginModal');
       refreshUI();
       renderLessons();
-
     } else if (data.denied) {
       showErr('Ваш доступ заблокирован администратором.');
     } else {
       showErr('Неверный логин или пароль.');
     }
-
   } catch(e) {
     showErr('Ошибка соединения. Проверьте интернет.');
   }
@@ -402,37 +307,30 @@ async function doLogin() {
   btn.textContent = 'Войти';
 }
 
-function showErr(msg) {
-  const el = document.getElementById('loginErr');
-  el.textContent = '⚠ ' + msg;
-  el.style.display = 'block';
-}
-function hideErr() { document.getElementById('loginErr').style.display = 'none'; }
+function showErr(msg) { const el = document.getElementById('loginErr'); el.textContent = '⚠ ' + msg; el.style.display = 'block'; }
+function hideErr()    { document.getElementById('loginErr').style.display = 'none'; }
 
 function signOut() {
   user = null;
   sessionStorage.removeItem('u');
+  sessionStorage.removeItem('lesson_token');
   refreshUI();
   renderLessons();
 }
 
-
-// ════════════════════════════════════════════════════════════
-// ОБНОВЛЕНИЕ ИНТЕРФЕЙСА (шапка + статус-бар)
-// ════════════════════════════════════════════════════════════
+// =====================================================
+// ИНТЕРФЕЙС
+// =====================================================
 function refreshUI() {
-  const loggedIn = !!user;
-  document.getElementById('loginBtn').style.display = loggedIn ? 'none' : 'block';
-  document.getElementById('userInfo').style.display = loggedIn ? 'flex'  : 'none';
-
-  if (loggedIn) {
+  const on = !!user;
+  document.getElementById('loginBtn').style.display = on ? 'none' : 'block';
+  document.getElementById('userInfo').style.display = on ? 'flex'  : 'none';
+  if (on) {
     const name = user.name || user.login;
     document.getElementById('userInitial').textContent = name[0].toUpperCase();
     document.getElementById('userName').textContent    = name;
-
-    const bar = document.getElementById('statusBar');
-    bar.classList.add('show');
-    document.getElementById('statusText').textContent = user.lessons.length > 0
+    document.getElementById('statusBar').classList.add('show');
+    document.getElementById('statusText').textContent  = user.lessons.length > 0
       ? `Добро пожаловать, ${name}! Открыто уроков: ${user.lessons.length}`
       : `Вы вошли. Уроки пока не открыты — ожидайте администратора.`;
   } else {
@@ -440,31 +338,26 @@ function refreshUI() {
   }
 }
 
-
-// ════════════════════════════════════════════════════════════
-// РЕНДЕР КАРТОЧЕК УРОКОВ
-// ════════════════════════════════════════════════════════════
+// =====================================================
+// КАРТОЧКИ
+// =====================================================
 function renderLessons() {
   const grid = document.getElementById('lessonsGrid');
   grid.innerHTML = '';
-
   LESSONS.forEach(l => {
     const hasAccess = user && user.lessons.includes(l.id);
     const card = document.createElement('div');
     card.className = 'card';
-    card.onclick = () => openLesson(l);
 
-    // Обложка: если есть img — показываем картинку, иначе эмодзи
     const thumbContent = l.img
       ? `<img src="${l.img}" alt="Урок ${l.id}" loading="lazy"><div class="thumb-overlay"></div>`
       : l.emoji;
 
-    // Кнопка внизу карточки
     let btn;
     if (!user) {
-      btn = `<button class="card-btn cb-login" onclick="event.stopPropagation();openModal('loginModal')">🔑 Войти для доступа</button>`;
+      btn = `<button class="card-btn cb-login" onclick="openModal('loginModal')">🔑 Войти для доступа</button>`;
     } else if (hasAccess) {
-      btn = `<button class="card-btn cb-play"  onclick="event.stopPropagation();openLesson(LESSONS[${l.id-1}])">▶ Смотреть урок</button>`;
+      btn = `<button class="card-btn cb-play" id="btn-${l.id}" onclick="watchLesson(${l.id}, this)">▶ Открыть урок</button>`;
     } else {
       btn = `<button class="card-btn cb-locked" disabled>🔒 Доступ закрыт</button>`;
     }
@@ -482,109 +375,76 @@ function renderLessons() {
   });
 }
 
-
-// ════════════════════════════════════════════════════════════
-// ОТКРЫТИЕ УРОКА — ГЛАВНАЯ ЗАЩИТА
-//
-// Вот здесь и происходит волшебство безопасности:
-// Мы НЕ берём ссылку на видео из кода сайта.
-// Мы КАЖДЫЙ РАЗ спрашиваем Apps Script:
-//   "Дай ссылку на урок 3 для пользователя ali2025"
-//
-// Apps Script идёт в Google Sheets прямо сейчас и проверяет:
-//   - есть ли такой пользователь?
-//   - статус 'active'?
-//   - урок 3 в его списке?
-//
-// Если ты удалил урок из списка или поставил 'denied' —
-// Apps Script вернёт ошибку и видео НЕ откроется.
-// Даже если клиент сохранил ссылку на сайт!
-// ════════════════════════════════════════════════════════════
-async function openLesson(l) {
+// =====================================================
+// ОТКРЫТЬ УРОК
+// 1. Нажал ▶ → спрашиваем Apps Script
+// 2. Apps Script проверяет таблицу ПРЯМО СЕЙЧАС
+// 3. Доступ есть → сохраняем токен → переходим на lesson.html
+// 4. lesson.html проверяет токен → показывает страницу урока
+// =====================================================
+async function watchLesson(lessonId, btnEl) {
   if (!user) { openModal('loginModal'); return; }
 
-  // Показываем модалку сразу со спиннером
-  document.getElementById('vmTitle').textContent = `Урок ${l.id}: ${l.title}`;
-  document.getElementById('videoContent').innerHTML = `
-    <div class="vloading">
-      <div class="spinner"></div>
-      <span>Проверяем доступ...</span>
-    </div>`;
-  openModal('videoModal');
+  btnEl.disabled  = true;
+  btnEl.innerHTML = `<div class="btn-spinner"></div> Проверяем...`;
 
   try {
-    // Запрос к Apps Script: дай ссылку на видео если доступ есть
-    const url = `${SCRIPT_URL}?action=getVideo`
-              + `&login=${encodeURIComponent(user.login)}`
-              + `&lessonId=${l.id}`;
-
-    const res  = await fetch(url);
+    const res  = await fetch(`${SCRIPT_URL}?action=getVideo&login=${encodeURIComponent(user.login)}&lessonId=${lessonId}`);
     const data = await res.json();
 
-    if (data.ok && data.videoId) {
-      // ✅ Доступ подтверждён → показываем видео
-      // data.videoId — это ID из Google Drive, который хранится
-      // только в таблице, клиент его не видит
-      document.getElementById('videoContent').innerHTML = `
-        <div class="vembed">
-          <iframe
-            src="https://docs.google.com/videos/d/${data.videoId}/edit?usp=sharing"
-            allowfullscreen allow="autoplay">
-            allow="autoplay; encrypted-media"
-            allowfullscreen
-            playsinline>
-          </iframe>
-        </div>`;
+    if (data.ok) {
+      // ✅ Доступ подтверждён — создаём токен и переходим на lesson.html
+      // ВАЖНО: videoUrl НЕ передаём клиенту!
+      // Ссылка на Google Vids хранится только в таблице
+      // При нажатии Play Apps Script сам сделает redirect
+      const lesson = LESSONS.find(l => l.id === lessonId);
+      sessionStorage.setItem('lesson_token', JSON.stringify({
+        lessonId:  lessonId,
+        title:     lesson.title,
+        desc:      lesson.desc,
+        userName:  user.name || user.login,
+        userLogin: user.login,
+        ts:        Date.now(),
+      }));
+      window.location.href = 'lesson.html';
 
     } else if (data.denied) {
-      // ❌ Доступ закрыт администратором
-      document.getElementById('videoContent').innerHTML = `
-        <div class="ibox">
-          <h4>🚫 Доступ закрыт</h4>
-          <p>Администратор закрыл вам доступ к этому уроку.<br>Обратитесь для получения доступа.</p>
-        </div>`;
-      // Обновляем локальный список уроков (убираем закрытый)
-      user.lessons = user.lessons.filter(id => id !== l.id);
+      showDenied('🚫', 'Доступ закрыт', 'Администратор закрыл вам доступ. Обратитесь для уточнения.');
+      user.lessons = user.lessons.filter(id => id !== lessonId);
       sessionStorage.setItem('u', JSON.stringify(user));
       renderLessons();
 
     } else {
-      // ❌ Урок не в списке доступных
-      document.getElementById('videoContent').innerHTML = `
-        <div class="ibox">
-          <h4>🔒 Нет доступа к уроку</h4>
-          <p>Урок «${l.title}» вам недоступен. Обратитесь к администратору.</p>
-        </div>`;
+      showDenied('🔒', 'Нет доступа', 'Этот урок вам недоступен. Обратитесь к администратору.');
+      btnEl.disabled  = false;
+      btnEl.innerHTML = '▶ Открыть урок';
     }
-
   } catch(e) {
-    document.getElementById('videoContent').innerHTML = `
-      <div class="ibox">
-        <h4>⚠ Ошибка соединения</h4>
-        <p>Не удалось загрузить урок. Проверьте интернет и попробуйте снова.</p>
-      </div>`;
+    showDenied('⚠', 'Ошибка соединения', 'Не удалось проверить доступ. Проверьте интернет.');
+    btnEl.disabled  = false;
+    btnEl.innerHTML = '▶ Открыть урок';
   }
 }
 
+function showDenied(icon, title, text) {
+  document.getElementById('deniedIcon').textContent  = icon;
+  document.getElementById('deniedTitle').textContent = title;
+  document.getElementById('deniedText').textContent  = text;
+  openModal('deniedModal');
+}
 
-// ════════════════════════════════════════════════════════════
-// УПРАВЛЕНИЕ МОДАЛКАМИ
-// ════════════════════════════════════════════════════════════
 function openModal(id) {
   document.getElementById(id).classList.add('show');
   if (id === 'loginModal') setTimeout(() => document.getElementById('iLogin').focus(), 80);
 }
 function closeModal(id) {
   document.getElementById(id).classList.remove('show');
-  if (id === 'videoModal') document.getElementById('videoContent').innerHTML = '';
   if (id === 'loginModal') hideErr();
 }
-// Клик по тёмному фону — закрыть модалку
 document.querySelectorAll('.overlay').forEach(el => {
   el.addEventListener('click', e => {
     if (e.target !== el) return;
     el.classList.remove('show');
-    document.getElementById('videoContent').innerHTML = '';
     hideErr();
   });
 });
