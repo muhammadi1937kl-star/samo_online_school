@@ -12,7 +12,6 @@
     --gold-bg:  #FFF8E7;
     --primary:  #1A1A2E;
     --bg:       #F5F7FA;
-    --bg2:      #FFFFFF;
     --text:     #1A1A2E;
     --muted:    #6B7280;
     --border:   #E5E7EB;
@@ -23,6 +22,7 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
 
+  /* ШАПКА */
   header {
     background:#fff; border-bottom:1px solid var(--border);
     box-shadow:0 1px 8px rgba(0,0,0,.06);
@@ -44,7 +44,8 @@
   .user-pill {
     display:none; align-items:center; gap:.5rem;
     background:var(--gold-bg); border:1.5px solid rgba(184,134,11,.25);
-    border-radius:20px; padding:.3rem .9rem .3rem .4rem; font-size:.85rem; font-weight:600;
+    border-radius:20px; padding:.3rem .9rem .3rem .4rem;
+    font-size:.85rem; font-weight:600;
   }
   .avatar-sm {
     width:28px; height:28px; border-radius:50%;
@@ -53,9 +54,10 @@
     display:flex; align-items:center; justify-content:center;
   }
 
-  main { flex:1; max-width:900px; width:100%; margin:0 auto; padding:2.5rem 2rem 4rem; }
+  /* ОСНОВНОЙ КОНТЕНТ */
+  main { flex:1; max-width:960px; width:100%; margin:0 auto; padding:2rem 2rem 4rem; }
 
-  .breadcrumb { font-size:.82rem; color:var(--muted); margin-bottom:1.5rem; display:flex; align-items:center; gap:.5rem; }
+  .breadcrumb { font-size:.82rem; color:var(--muted); margin-bottom:1.2rem; display:flex; align-items:center; gap:.5rem; }
   .breadcrumb a { color:var(--muted); text-decoration:none; }
   .breadcrumb a:hover { color:var(--gold); }
 
@@ -64,65 +66,90 @@
     background:var(--gold-bg); border:1.5px solid rgba(184,134,11,.3);
     color:var(--gold); font-size:.78rem; font-weight:800;
     letter-spacing:1.5px; text-transform:uppercase;
-    padding:.35rem .9rem; border-radius:20px; margin-bottom:1rem;
+    padding:.35rem .9rem; border-radius:20px; margin-bottom:.8rem;
   }
-  .lesson-title { font-family:'Playfair Display',serif; font-size:clamp(1.5rem,4vw,2.2rem); font-weight:900; line-height:1.2; margin-bottom:.6rem; color:var(--primary); }
-  .lesson-meta { color:var(--muted); font-size:.85rem; margin-bottom:2rem; font-weight:600; }
+  .lesson-title {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(1.4rem,4vw,2rem);
+    font-weight:900; line-height:1.2; margin-bottom:.5rem; color:var(--primary);
+  }
+  .lesson-meta { color:var(--muted); font-size:.85rem; margin-bottom:1.5rem; font-weight:600; }
 
-  /* БЛОК ВИДЕО */
+  /* ══ ВИДЕО БЛОК ══ */
   .video-block {
-    background:#fff; border:1px solid var(--border);
-    border-radius:20px; overflow:hidden; margin-bottom:2rem;
-    box-shadow:var(--shadow);
+    background:#000;
+    border-radius:20px; overflow:hidden;
+    margin-bottom:1.5rem;
+    box-shadow:0 8px 32px rgba(0,0,0,.2);
+    position:relative;
   }
-  .video-area {
+
+  /* Превью — показывается до нажатия Play */
+  .video-preview {
     width:100%; aspect-ratio:16/9;
     background:linear-gradient(135deg,#1A1A2E,#2D2D44,#1A1A35);
     display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:2rem;
-    position:relative; overflow:hidden;
+    align-items:center; justify-content:center; gap:1.8rem;
+    position:relative; cursor:pointer;
   }
-  .video-area::before {
+  .video-preview::before {
     content:'';
     position:absolute; inset:0;
-    background:radial-gradient(ellipse at 50% 50%,rgba(184,134,11,.12) 0%,transparent 65%);
+    background:radial-gradient(ellipse at 50% 50%,rgba(184,134,11,.15) 0%,transparent 65%);
   }
-
-  .play-btn {
-    width:90px; height:90px; border-radius:50%;
+  /* Кнопка Play на превью */
+  .play-circle {
+    width:80px; height:80px; border-radius:50%;
     background:var(--gold);
-    border:none; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 30px rgba(184,134,11,.6);
     animation:pulse 2s ease-in-out infinite;
-    transition:transform .2s, background .2s;
     position:relative; z-index:1; flex-shrink:0;
-    box-shadow:0 4px 24px rgba(184,134,11,.5);
+    transition:transform .2s;
   }
-  .play-btn:hover { transform:scale(1.08); background:var(--gold-l); }
-  .play-btn:disabled { opacity:.6; cursor:wait; animation:none; }
-  .play-btn svg { width:36px; height:36px; margin-left:5px; }
+  .video-preview:hover .play-circle { transform:scale(1.1); }
+  .play-circle svg { width:32px; height:32px; margin-left:4px; }
   @keyframes pulse {
-    0%,100% { box-shadow:0 4px 24px rgba(184,134,11,.5); }
-    50%      { box-shadow:0 4px 40px rgba(184,134,11,.8); }
+    0%,100% { box-shadow:0 4px 30px rgba(184,134,11,.5); }
+    50%      { box-shadow:0 4px 50px rgba(184,134,11,.9); }
   }
+  .preview-text { text-align:center; position:relative; z-index:1; }
+  .preview-text h3 { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:#fff; margin-bottom:.3rem; }
+  .preview-text p { color:rgba(255,255,255,.55); font-size:.85rem; }
 
-  .play-area-text { text-align:center; position:relative; z-index:1; }
-  .play-area-text h3 { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; margin-bottom:.4rem; color:#fff; }
-  .play-area-text p { color:rgba(255,255,255,.6); font-size:.88rem; }
-
-  .play-spinner {
-    width:32px; height:32px; border-radius:50%;
-    border:3px solid rgba(255,255,255,.3);
-    border-top-color:#fff;
-    animation:spin .7s linear infinite;
+  /* Спиннер загрузки */
+  .loading-area {
+    width:100%; aspect-ratio:16/9;
+    background:#111;
+    display:none; align-items:center; justify-content:center; flex-direction:column; gap:1rem;
+  }
+  .loading-area.show { display:flex; }
+  .spinner {
+    width:44px; height:44px; border-radius:50%;
+    border:3px solid rgba(184,134,11,.2);
+    border-top-color:var(--gold);
+    animation:spin .8s linear infinite;
   }
   @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-area p { color:rgba(255,255,255,.5); font-size:.88rem; }
 
+  /* Iframe плеер — скрыт до загрузки */
+  .player-wrap {
+    width:100%; aspect-ratio:16/9;
+    display:none;
+  }
+  .player-wrap.show { display:block; }
+  .player-wrap iframe {
+    width:100%; height:100%; border:none; display:block;
+  }
+
+  /* Нижняя полоска */
   .video-footer {
-    padding:.9rem 1.5rem;
-    border-top:1px solid var(--border);
+    background:#fff; border:1px solid var(--border);
+    border-top:none; border-radius:0 0 20px 20px;
+    padding:.8rem 1.5rem;
     display:flex; align-items:center; justify-content:space-between;
-    background:#FAFAFA;
+    flex-wrap:wrap; gap:.5rem;
   }
   .video-footer-left { color:var(--muted); font-size:.82rem; font-weight:600; }
   .access-badge {
@@ -132,17 +159,36 @@
     font-size:.78rem; font-weight:700;
   }
 
-  /* ОПИСАНИЕ */
+  /* ══ ОПИСАНИЕ ══ */
   .lesson-desc-block {
     background:#fff; border:1px solid var(--border);
     border-radius:16px; padding:1.5rem 2rem;
     box-shadow:var(--shadow);
   }
-  .lesson-desc-block h4 { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--gold); margin-bottom:.8rem; }
+  .lesson-desc-block h4 {
+    font-family:'Playfair Display',serif;
+    font-size:1.05rem; font-weight:700;
+    color:var(--gold); margin-bottom:.8rem;
+  }
   .lesson-desc-block p { color:var(--muted); line-height:1.7; font-size:.95rem; }
 
-  /* БЛОКИРОВКА */
-  #blockedScreen { display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:1.5rem; text-align:center; padding:2rem; background:var(--bg); }
+  /* ══ ЭКРАН ОШИБКИ ДОСТУПА ══ */
+  .error-box {
+    background:#FEF2F2; border:1.5px solid #FECACA;
+    border-radius:14px; padding:1.5rem 2rem;
+    margin-bottom:1.5rem; display:none; text-align:center;
+  }
+  .error-box.show { display:block; }
+  .error-box h4 { color:#DC2626; margin-bottom:.5rem; font-size:1rem; }
+  .error-box p { color:#7F1D1D; font-size:.88rem; }
+
+  /* ══ ЭКРАН БЛОКИРОВКИ (прямой вход) ══ */
+  #blockedScreen {
+    display:none; flex:1;
+    align-items:center; justify-content:center;
+    flex-direction:column; gap:1.5rem;
+    text-align:center; padding:2rem; background:var(--bg);
+  }
   #blockedScreen.show { display:flex; }
   .blocked-icon { font-size:4rem; }
   .blocked-title { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--primary); }
@@ -158,16 +204,22 @@
   }
   .go-home:hover { background:var(--gold-l); transform:translateY(-1px); }
 
-  footer { border-top:1px solid var(--border); padding:1.5rem 2rem; text-align:center; color:var(--muted); font-size:.82rem; flex-shrink:0; background:#fff; }
+  footer {
+    border-top:1px solid var(--border); padding:1.5rem 2rem;
+    text-align:center; color:var(--muted); font-size:.82rem;
+    flex-shrink:0; background:#fff;
+  }
 
   @media(max-width:600px){
     header { padding:0 1rem; }
-    main { padding:1.5rem 1rem 3rem; }
+    main { padding:1.2rem 1rem 3rem; }
+    .video-footer { flex-direction:column; align-items:flex-start; }
   }
 </style>
 </head>
 <body>
 
+<!-- ШАПКА -->
 <header>
   <a href="index.html" class="logo">Давлатов <span>Академия</span></a>
   <div style="display:flex;align-items:center;gap:1rem;">
@@ -175,12 +227,13 @@
       <div class="avatar-sm" id="userInitial"></div>
       <span id="userName"></span>
     </div>
-    <a href="index.html" class="back-btn">← Назад к урокам</a>
+    <a href="index.html" class="back-btn">← Назад</a>
   </div>
 </header>
 
 <!-- СТРАНИЦА УРОКА -->
 <main id="lessonPage" style="display:none;">
+
   <div class="breadcrumb">
     <a href="index.html">Главная</a>
     <span>›</span>
@@ -193,46 +246,68 @@
   <h1 class="lesson-title" id="lessonTitle"></h1>
   <p class="lesson-meta">🎓 Саидмурод Давлатов</p>
 
-  <div class="video-block">
-    <div class="video-area">
+  <!-- ВИДЕО -->
+  <div class="video-block" id="videoBlock">
 
-      <!--
-        КНОПКА PLAY — НЕТ НИКАКОЙ ССЫЛКИ!
-        onclick вызывает функцию openLesson()
-        которая заново спрашивает Apps Script:
-        "Есть ли доступ прямо сейчас?"
-        Только если ДА — Apps Script перенаправляет
-        Клиент никогда не видит ссылку на Google Vids
-      -->
-      <button class="play-btn" id="playBtn" onclick="openLesson()">
-        <svg viewBox="0 0 24 24" fill="var(--dark)">
+    <!-- 1. ПРЕВЬЮ — кнопка Play, видна до нажатия -->
+    <div class="video-preview" id="videoPreview" onclick="loadPlayer()">
+      <div class="play-circle">
+        <svg viewBox="0 0 24 24" fill="white">
           <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
-      </button>
-
-      <div class="play-area-text">
-        <h3 id="videoTitle"></h3>
-        <p>Нажмите ▶ для просмотра урока</p>
       </div>
+      <div class="preview-text">
+        <h3 id="previewTitle"></h3>
+        <p>Нажмите для воспроизведения</p>
+      </div>
+    </div>
 
+    <!-- 2. ЗАГРУЗКА — спиннер пока проверяем и грузим -->
+    <div class="loading-area" id="loadingArea">
+      <div class="spinner"></div>
+      <p>Загружаем урок...</p>
     </div>
-    <div class="video-footer">
-      <div class="video-footer-left">🔒 Доступ защищён · Ссылка не видна</div>
-      <div class="access-badge">✓ Доступ открыт</div>
+
+    <!-- 3. ПЛЕЕР — iframe появляется после проверки доступа -->
+    <div class="player-wrap" id="playerWrap">
+      <iframe
+        id="videoIframe"
+        src=""
+        allow="autoplay; fullscreen"
+        allowfullscreen>
+      </iframe>
     </div>
+
   </div>
 
-  <div class="lesson-desc-block">
+  <!-- Нижняя полоска -->
+  <div class="video-footer">
+    <div class="video-footer-left">🔒 Доступ защищён · Проверка при каждом просмотре</div>
+    <div class="access-badge">✓ Доступ открыт</div>
+  </div>
+
+  <!-- Ошибка доступа (если закрыли пока смотрел) -->
+  <div class="error-box" id="errorBox">
+    <h4 id="errorTitle">🚫 Доступ закрыт</h4>
+    <p id="errorText">Администратор закрыл ваш доступ к этому уроку.</p>
+  </div>
+
+  <!-- Описание урока -->
+  <div class="lesson-desc-block" style="margin-top:1.5rem;">
     <h4>📖 Об этом уроке</h4>
     <p id="lessonDesc"></p>
   </div>
+
 </main>
 
-<!-- ЭКРАН БЛОКИРОВКИ -->
+<!-- ЭКРАН БЛОКИРОВКИ — если зашли напрямую -->
 <div id="blockedScreen">
   <div class="blocked-icon">🚫</div>
   <div class="blocked-title">Доступ запрещён</div>
-  <p class="blocked-sub">Вы не можете открыть эту страницу напрямую.<br>Войдите на главной странице и нажмите кнопку урока.</p>
+  <p class="blocked-sub">
+    Эту страницу нельзя открыть напрямую.<br>
+    Войдите на главной странице и нажмите кнопку урока.
+  </p>
   <div class="countdown">Переход на главную через <strong id="countNum">5</strong> сек...</div>
   <a href="index.html" class="go-home">← На главную</a>
 </div>
@@ -240,55 +315,25 @@
 <footer>© 2025 Давлатов Академия · Все права защищены</footer>
 
 <script>
-/*
-  КАК РАБОТАЕТ ЗАЩИТА НА ЭТОЙ СТРАНИЦЕ:
+// ═══════════════════════════════════════════════════════
+// ВСТАВЬ СВОЙ URL APPS SCRIPT (тот же что в index.html)
+// ═══════════════════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwXWWx0dpQBseJzIxg_B0qt79Bs79HKun4GV4EqQQN9EKGXx4RF8qw9vC-KVkGabk/exec';
 
-  1. Клиент нажал ▶ на index.html
-  2. index.html проверил доступ через Apps Script
-  3. Сохранил в sessionStorage токен БЕЗ ссылки:
-     { lessonId, title, desc, userLogin, userName, ts }
-  4. Перешёл на lesson.html
-
-  5. lesson.html читает токен — проверяет — удаляет
-  6. Показывает страницу с кнопкой Play
-
-  7. Клиент нажимает Play ▶
-  8. openLesson() СНОВА спрашивает Apps Script:
-     "Есть ли доступ к уроку 1 у пользователя ali2025?"
-  9. Apps Script проверяет таблицу ПРЯМО СЕЙЧАС
-  10. Если доступ есть — Apps Script делает redirect
-      на Google Vids на СЕРВЕРЕ
-  11. Клиент попадает на Google Vids
-      НО не видит ссылку нигде на странице!
-
-  ИТОГ:
-  - Ссылка на Google Vids нигде не показывается
-  - Нет кнопки с href на Google Vids
-  - Каждое нажатие Play = новая проверка в таблице
-  - Закрыл доступ → кнопка Play не работает
-*/
-
-// =====================================================
-// URL Apps Script — тот же что в index.html
-// =====================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxFvgu8HvedPs6nR91AH_aihiegthkoVU8tTAGJZccHSs9TfN3KivrLNGsnwhmNyl2z/exec';
-
-// Данные урока из токена
 let lessonData = null;
 
-// =====================================================
-// ЗАГРУЗКА — проверяем токен
-// =====================================================
+// ═══════════════════════════════════════════════════════
+// ЗАГРУЗКА СТРАНИЦЫ — проверяем токен
+// ═══════════════════════════════════════════════════════
 window.addEventListener('load', () => {
   const raw = sessionStorage.getItem('lesson_token');
-
   if (!raw) { showBlocked(); return; }
 
   let token;
   try { token = JSON.parse(raw); }
   catch(e) { showBlocked(); return; }
 
-  // Токен живёт 10 минут
+  // Токен живёт максимум 10 минут
   if (!token.ts || Date.now() - token.ts > 10 * 60 * 1000) {
     sessionStorage.removeItem('lesson_token');
     showBlocked(); return;
@@ -299,73 +344,101 @@ window.addEventListener('load', () => {
     showBlocked(); return;
   }
 
-  // ✅ Токен валидный — удаляем и показываем страницу
+  // ✅ Токен валидный — сразу удаляем (F5 больше не откроет)
   sessionStorage.removeItem('lesson_token');
   lessonData = token;
   showLesson(token);
 });
 
-// =====================================================
+// ═══════════════════════════════════════════════════════
 // ПОКАЗЫВАЕМ СТРАНИЦУ УРОКА
-// =====================================================
+// ═══════════════════════════════════════════════════════
 function showLesson(token) {
   document.title = `Урок ${token.lessonId}: ${token.title} — Давлатов Академия`;
 
+  // Шапка
   document.getElementById('userPill').style.display  = 'flex';
   document.getElementById('userInitial').textContent = (token.userName || token.userLogin)[0].toUpperCase();
   document.getElementById('userName').textContent    = token.userName || token.userLogin;
 
-  document.getElementById('bcTitle').textContent     = `Урок ${token.lessonId}`;
-  document.getElementById('lessonNum').textContent   = `Урок ${token.lessonId}`;
-  document.getElementById('lessonTitle').textContent = token.title;
-  document.getElementById('videoTitle').textContent  = token.title;
-  document.getElementById('lessonDesc').textContent  = token.desc || '';
+  // Заголовки
+  document.getElementById('bcTitle').textContent      = `Урок ${token.lessonId}`;
+  document.getElementById('lessonNum').textContent    = `Урок ${token.lessonId}`;
+  document.getElementById('lessonTitle').textContent  = token.title;
+  document.getElementById('previewTitle').textContent = token.title;
+  document.getElementById('lessonDesc').textContent   = token.desc || '';
 
   document.getElementById('lessonPage').style.display = 'block';
 }
 
-// =====================================================
-// НАЖАТИЕ PLAY — СНОВА ПРОВЕРЯЕМ ДОСТУП
+// ═══════════════════════════════════════════════════════
+// НАЖАЛИ PLAY — ЗАГРУЖАЕМ ВИДЕО
 //
-// Клиент не видит ссылку Google Vids нигде!
-// Apps Script сам делает redirect на Google Vids.
-// Мы просто открываем URL Apps Script с параметрами —
-// Apps Script проверяет таблицу и редиректит на Vids.
-// =====================================================
-async function openLesson() {
+// Как работает:
+// 1. Скрываем превью, показываем спиннер
+// 2. Запрашиваем Apps Script: "Дай ID видео для урока N"
+// 3. Apps Script проверяет таблицу ПРЯМО СЕЙЧАС
+// 4. Если доступ есть → возвращает fileId из Google Drive
+// 5. Вставляем fileId в iframe src
+// 6. Видео играет прямо на странице!
+//
+// ВАЖНО: fileId нигде не показывается пользователю
+// Он вставляется только в src iframe который скрытый
+// ═══════════════════════════════════════════════════════
+async function loadPlayer() {
   if (!lessonData) { window.location.href = 'index.html'; return; }
 
-  const btn = document.getElementById('playBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="play-spinner"></div>';
+  // Скрываем превью → показываем спиннер
+  document.getElementById('videoPreview').style.display = 'none';
+  document.getElementById('loadingArea').classList.add('show');
 
   try {
-    // Запрос к Apps Script action=openVideo
-    // Он проверяет таблицу и возвращает статус
-    // Мы открываем redirect-URL в новой вкладке
-    const redirectUrl = `${SCRIPT_URL}?action=openVideo`
-      + `&login=${encodeURIComponent(lessonData.userLogin)}`
-      + `&lessonId=${lessonData.lessonId}`;
+    const res  = await fetch(
+      `${SCRIPT_URL}?action=getVideo` +
+      `&login=${encodeURIComponent(lessonData.userLogin)}` +
+      `&lessonId=${lessonData.lessonId}`
+    );
+    const data = await res.json();
 
-    // Открываем Apps Script URL — он сам перенаправит на Google Vids
-    // Клиент видит только URL Apps Script, не Google Vids
-    // window.open(redirectUrl, '_blank');
-    window.location.href = redirectUrl;
+    if (data.ok && data.fileId) {
+      // ✅ Доступ есть — вставляем fileId в iframe
+      // src собирается здесь, клиент не видит его заранее
+      const iframeSrc = `https://drive.google.com/file/d/${data.fileId}/preview`;
+      document.getElementById('videoIframe').src = iframeSrc;
+
+      // Скрываем спиннер → показываем плеер
+      document.getElementById('loadingArea').classList.remove('show');
+      document.getElementById('playerWrap').classList.add('show');
+
+    } else if (data.denied) {
+      // ❌ Доступ закрыт администратором
+      document.getElementById('loadingArea').classList.remove('show');
+      document.getElementById('videoBlock').style.display = 'none';
+      showError('🚫 Доступ закрыт', 'Администратор закрыл вам доступ к этому уроку.');
+
+    } else {
+      // ❌ Урок недоступен
+      document.getElementById('loadingArea').classList.remove('show');
+      document.getElementById('videoPreview').style.display = 'flex';
+      showError('🔒 Нет доступа', 'Этот урок вам недоступен. Обратитесь к администратору.');
+    }
 
   } catch(e) {
-    alert('Ошибка соединения. Проверьте интернет.');
+    document.getElementById('loadingArea').classList.remove('show');
+    document.getElementById('videoPreview').style.display = 'flex';
+    showError('⚠ Ошибка', 'Не удалось загрузить урок. Проверьте интернет и попробуйте снова.');
   }
-
-  // Восстанавливаем кнопку через 2 секунды
-  setTimeout(() => {
-    btn.disabled = false;
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="var(--dark)"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-  }, 2000);
 }
 
-// =====================================================
-// БЛОКИРОВКА
-// =====================================================
+function showError(title, text) {
+  document.getElementById('errorTitle').textContent = title;
+  document.getElementById('errorText').textContent  = text;
+  document.getElementById('errorBox').classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════
+// ЭКРАН БЛОКИРОВКИ
+// ═══════════════════════════════════════════════════════
 function showBlocked() {
   document.getElementById('blockedScreen').classList.add('show');
   let n = 5;
