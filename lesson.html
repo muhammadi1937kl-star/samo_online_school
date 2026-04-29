@@ -268,13 +268,14 @@
       <p>Загружаем урок...</p>
     </div>
 
-    <!-- 3. ПЛЕЕР — iframe появляется после проверки доступа -->
+    <!-- 3. ПЛЕЕР — YouTube iframe, нет кнопки скачать, нет внешней ссылки -->
     <div class="player-wrap" id="playerWrap">
       <iframe
         id="videoIframe"
         src=""
-        allow="autoplay; fullscreen"
-        allowfullscreen>
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        referrerpolicy="no-referrer">
       </iframe>
     </div>
 
@@ -318,7 +319,7 @@
 // ═══════════════════════════════════════════════════════
 // ВСТАВЬ СВОЙ URL APPS SCRIPT (тот же что в index.html)
 // ═══════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwwXWWx0dpQBseJzIxg_B0qt79Bs79HKun4GV4EqQQN9EKGXx4RF8qw9vC-KVkGabk/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAL0dV9bGGMfcgpaEj-836gGhUkBbZ2l3hV-np6hpzBcrhOusaHbbbMHki2DrT8ZSl/exec';
 
 let lessonData = null;
 
@@ -401,9 +402,13 @@ async function loadPlayer() {
     const data = await res.json();
 
     if (data.ok && data.fileId) {
-      // ✅ Доступ есть — вставляем fileId в iframe
-      // src собирается здесь, клиент не видит его заранее
-      const iframeSrc = `https://drive.google.com/file/d/${data.fileId}/preview`;
+      // ✅ Доступ есть — собираем YouTube embed ссылку
+      // ?rel=0        — не показывать похожие видео в конце
+      // &modestbranding=1 — минимальный логотип YouTube
+      // &controls=1   — показывать кнопки плеера
+      // &disablekb=0  — клавиатура работает
+      // fileId здесь это YouTube videoId (11 символов)
+      const iframeSrc = `https://www.youtube.com/embed/${data.fileId}?rel=0&modestbranding=1&autoplay=1`;
       document.getElementById('videoIframe').src = iframeSrc;
 
       // Скрываем спиннер → показываем плеер
