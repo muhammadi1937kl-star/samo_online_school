@@ -7,190 +7,138 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --gold:    #B8860B;
-    --gold-l:  #DAA520;
-    --gold-bg: #FFF8E7;
-    --primary: #1A1A2E;
-    --accent:  #E8A000;
-    --bg:      #F5F7FA;
-    --bg2:     #FFFFFF;
-    --card:    #FFFFFF;
-    --text:    #1A1A2E;
-    --muted:   #6B7280;
-    --border:  #E5E7EB;
-    --green:   #059669;
-    --green-bg:#ECFDF5;
-    --red:     #DC2626;
-    --shadow:  0 2px 16px rgba(0,0,0,.08);
-    --shadow-hover: 0 8px 32px rgba(0,0,0,.14);
+    --gold:#B8860B; --gold-l:#DAA520; --gold-bg:#FFF8E7;
+    --primary:#1A1A2E; --bg:#F5F7FA; --card:#fff;
+    --text:#1A1A2E; --muted:#6B7280; --border:#E5E7EB;
+    --green:#059669; --green-bg:#ECFDF5; --red:#DC2626;
+    --sh:0 2px 16px rgba(0,0,0,.08); --sh-h:0 8px 32px rgba(0,0,0,.14);
   }
-  * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
 
-  header {
-    background:#FFFFFF;
-    border-bottom:1px solid var(--border);
-    box-shadow:0 1px 8px rgba(0,0,0,.06);
-    padding:0 2rem;
-    display:flex; align-items:center; justify-content:space-between;
-    height:70px; position:sticky; top:0; z-index:100;
-  }
-  .logo { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:700; color:var(--primary); }
-  .logo span { color:var(--gold); }
-  #userInfo { display:none; align-items:center; gap:.8rem; }
-  .avatar {
-    width:36px; height:36px; border-radius:50%;
-    background:var(--gold); color:#fff;
-    font-weight:700; font-size:.9rem;
-    display:flex; align-items:center; justify-content:center;
-  }
-  #userName { font-size:.9rem; font-weight:700; color:var(--text); }
-  .btn { padding:.5rem 1.2rem; border-radius:10px; font-family:'Nunito',sans-serif; font-size:.9rem; font-weight:700; cursor:pointer; transition:all .2s; border:none; }
-  .btn-gold { background:var(--gold); color:#fff; box-shadow:0 2px 8px rgba(184,134,11,.3); }
-  .btn-gold:hover { background:var(--gold-l); transform:translateY(-1px); box-shadow:0 4px 14px rgba(184,134,11,.4); }
-  .btn-ghost { background:#F3F4F6; color:var(--muted); border:1px solid var(--border); }
-  .btn-ghost:hover { background:#E5E7EB; color:var(--text); }
+  header{background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.06);
+    padding:0 2rem;height:70px;position:sticky;top:0;z-index:100;
+    display:flex;align-items:center;justify-content:space-between;}
+  .logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--primary);}
+  .logo span{color:var(--gold);}
+  #userInfo{display:none;align-items:center;gap:.8rem;}
+  .avatar{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;
+    font-weight:700;font-size:.9rem;display:flex;align-items:center;justify-content:center;}
+  #userName{font-size:.9rem;font-weight:700;}
+  .btn{padding:.5rem 1.2rem;border-radius:10px;font-family:'Nunito',sans-serif;font-size:.9rem;
+    font-weight:700;cursor:pointer;transition:all .2s;border:none;}
+  .btn-gold{background:var(--gold);color:#fff;box-shadow:0 2px 8px rgba(184,134,11,.3);}
+  .btn-gold:hover{background:var(--gold-l);transform:translateY(-1px);}
+  .btn-ghost{background:#F3F4F6;color:var(--muted);border:1px solid var(--border);}
+  .btn-ghost:hover{background:#E5E7EB;color:var(--text);}
 
-  /* ГЕРОЙ */
-  .hero {
-    text-align:center; padding:5rem 2rem 3rem;
-    background:linear-gradient(160deg, #FFFBF0 0%, #F5F7FA 60%);
-    border-bottom:1px solid var(--border);
-    position:relative; overflow:hidden;
-  }
-  .hero::before {
-    content:'';
-    position:absolute; top:-100px; left:50%; transform:translateX(-50%);
-    width:600px; height:600px; border-radius:50%;
-    background:radial-gradient(circle, rgba(218,165,32,.12) 0%, transparent 70%);
-    pointer-events:none;
-  }
-  .hero-badge {
-    display:inline-block;
-    background:var(--gold-bg); border:1.5px solid rgba(184,134,11,.3);
-    color:var(--gold); font-size:.78rem; font-weight:800;
-    letter-spacing:2px; text-transform:uppercase;
-    padding:.4rem 1rem; border-radius:20px; margin-bottom:1.5rem;
-  }
-  .hero h1 { font-family:'Playfair Display',serif; font-size:clamp(2rem,5vw,3.5rem); font-weight:900; line-height:1.15; margin-bottom:1rem; color:var(--primary); }
-  .hero h1 em { font-style:normal; color:var(--gold); }
-  .hero p { color:var(--muted); font-size:1.05rem; max-width:520px; margin:0 auto 2rem; line-height:1.7; }
+  .hero{text-align:center;padding:5rem 2rem 3rem;
+    background:linear-gradient(160deg,#FFFBF0 0%,#F5F7FA 60%);
+    border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-100px;left:50%;transform:translateX(-50%);
+    width:600px;height:600px;border-radius:50%;
+    background:radial-gradient(circle,rgba(218,165,32,.12) 0%,transparent 70%);pointer-events:none;}
+  .hero-badge{display:inline-block;background:var(--gold-bg);border:1.5px solid rgba(184,134,11,.3);
+    color:var(--gold);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+    padding:.4rem 1rem;border-radius:20px;margin-bottom:1.5rem;}
+  .hero h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:900;
+    line-height:1.15;margin-bottom:1rem;color:var(--primary);}
+  .hero h1 em{font-style:normal;color:var(--gold);}
+  .hero p{color:var(--muted);font-size:1.05rem;max-width:520px;margin:0 auto 2rem;line-height:1.7;}
 
-  #statusBar {
-    display:none; align-items:center; gap:.6rem;
-    background:var(--green-bg); border:1.5px solid rgba(5,150,105,.25);
-    border-radius:12px; padding:.75rem 1.2rem;
-    margin:0 auto 1.5rem; max-width:520px;
-    font-size:.88rem; color:var(--green); font-weight:600;
-  }
-  #statusBar.show { display:flex; }
-  .dot { width:8px; height:8px; border-radius:50%; background:currentColor; flex-shrink:0; }
+  #statusBar{display:none;align-items:center;gap:.6rem;background:var(--green-bg);
+    border:1.5px solid rgba(5,150,105,.25);border-radius:12px;padding:.75rem 1.2rem;
+    margin:0 auto 1.5rem;max-width:520px;font-size:.88rem;color:var(--green);font-weight:600;}
+  #statusBar.show{display:flex;}
+  .dot{width:8px;height:8px;border-radius:50%;background:currentColor;flex-shrink:0;}
 
-  /* УРОКИ */
-  .lessons-section { padding:2.5rem 2rem 5rem; max-width:1200px; margin:0 auto; }
-  .sec-title { font-family:'Playfair Display',serif; font-size:1.8rem; font-weight:700; text-align:center; margin-bottom:.4rem; color:var(--primary); }
-  .sec-sub { text-align:center; color:var(--muted); margin-bottom:2.5rem; font-size:.95rem; }
-  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(270px,1fr)); gap:1.5rem; }
+  .lessons-section{padding:2.5rem 2rem 5rem;max-width:1200px;margin:0 auto;}
+  .sec-title{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;
+    text-align:center;margin-bottom:.4rem;color:var(--primary);}
+  .sec-sub{text-align:center;color:var(--muted);margin-bottom:2.5rem;font-size:.95rem;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.5rem;}
 
-  .card {
-    background:var(--card);
-    border:1px solid var(--border);
-    border-radius:18px; overflow:hidden;
-    transition:transform .25s, box-shadow .25s, border-color .25s;
-    cursor:pointer; position:relative;
-    box-shadow:var(--shadow);
-  }
-  .card:hover { transform:translateY(-5px); box-shadow:var(--shadow-hover); border-color:rgba(184,134,11,.3); }
+  .card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;
+    transition:transform .25s,box-shadow .25s,border-color .25s;
+    cursor:pointer;position:relative;box-shadow:var(--sh);}
+  .card:hover{transform:translateY(-5px);box-shadow:var(--sh-h);border-color:rgba(184,134,11,.3);}
 
-  .thumb {
-    width:100%; height:175px;
-    display:flex; align-items:center; justify-content:center; font-size:3.2rem;
-    background:linear-gradient(135deg,#FFF8E7,#FDEFC3);
-    position:relative; overflow:hidden;
-  }
-  .thumb img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-  .thumb-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,.25) 0%,rgba(0,0,0,.05) 60%); }
+  .thumb{width:100%;height:175px;display:flex;align-items:center;justify-content:center;
+    font-size:3.2rem;background:linear-gradient(135deg,#FFF8E7,#FDEFC3);
+    position:relative;overflow:hidden;}
+  .thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .thumb-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.3) 0%,rgba(0,0,0,.05) 60%);}
 
-  .badge { position:absolute; top:12px; font-size:.72rem; font-weight:800; border-radius:8px; padding:4px 10px; z-index:2; }
-  .b-num { left:12px; background:var(--gold); color:#fff; box-shadow:0 2px 8px rgba(0,0,0,.2); }
-  .b-lock { right:12px; background:rgba(255,255,255,.92); border:1px solid var(--border); color:var(--muted); backdrop-filter:blur(4px); box-shadow:0 2px 6px rgba(0,0,0,.1); }
-  .b-lock.open { background:var(--green-bg); border-color:rgba(5,150,105,.3); color:var(--green); }
+  /* Счётчик частей */
+  .parts-pill{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:2;
+    background:rgba(0,0,0,.65);color:#fff;font-size:.72rem;font-weight:700;
+    border-radius:20px;padding:3px 12px;backdrop-filter:blur(4px);white-space:nowrap;}
 
-  .card-body { padding:1.2rem 1.3rem 1.4rem; }
-  .card-title { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; margin-bottom:.4rem; line-height:1.3; color:var(--primary); }
-  .card-desc { color:var(--muted); font-size:.83rem; line-height:1.5; margin-bottom:1rem; }
-  .card-btn {
-    width:100%; padding:.7rem; border-radius:10px;
-    font-family:'Nunito',sans-serif; font-size:.87rem; font-weight:700;
-    cursor:pointer; border:none; transition:all .2s;
-    display:flex; align-items:center; justify-content:center; gap:.5rem;
-  }
-  .cb-login { background:var(--gold); color:#fff; box-shadow:0 2px 8px rgba(184,134,11,.3); }
-  .cb-login:hover { background:var(--gold-l); transform:scale(1.02); }
-  .cb-play { background:var(--green-bg); color:var(--green); border:1.5px solid rgba(5,150,105,.3); }
-  .cb-play:hover { background:#D1FAE5; transform:scale(1.02); }
-  .cb-play:disabled { opacity:.6; cursor:wait; transform:none; }
-  .cb-locked { background:#F9FAFB; border:1px solid var(--border); color:#9CA3AF; cursor:default; }
+  .badge{position:absolute;top:12px;font-size:.72rem;font-weight:800;border-radius:8px;padding:4px 10px;z-index:2;}
+  .b-num{left:12px;background:var(--gold);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+  .b-lock{right:12px;background:rgba(255,255,255,.92);border:1px solid var(--border);
+    color:var(--muted);backdrop-filter:blur(4px);}
+  .b-lock.open{background:var(--green-bg);border-color:rgba(5,150,105,.3);color:var(--green);}
 
-  .btn-spinner {
-    width:14px; height:14px; border-radius:50%;
-    border:2px solid rgba(5,150,105,.3); border-top-color:var(--green);
-    animation:spin .7s linear infinite; flex-shrink:0;
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
+  .card-body{padding:1.2rem 1.3rem 1.4rem;}
+  .card-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;
+    margin-bottom:.4rem;line-height:1.3;color:var(--primary);}
+  .card-desc{color:var(--muted);font-size:.83rem;line-height:1.5;margin-bottom:1rem;}
+  .card-btn{width:100%;padding:.7rem;border-radius:10px;font-family:'Nunito',sans-serif;
+    font-size:.87rem;font-weight:700;cursor:pointer;border:none;transition:all .2s;
+    display:flex;align-items:center;justify-content:center;gap:.5rem;}
+  .cb-login{background:var(--gold);color:#fff;box-shadow:0 2px 8px rgba(184,134,11,.3);}
+  .cb-login:hover{background:var(--gold-l);}
+  .cb-play{background:var(--green-bg);color:var(--green);border:1.5px solid rgba(5,150,105,.3);}
+  .cb-play:hover{background:#D1FAE5;}
+  .cb-play:disabled{opacity:.6;cursor:wait;}
+  .cb-locked{background:#F9FAFB;border:1px solid var(--border);color:#9CA3AF;cursor:default;}
+  .btn-spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(5,150,105,.3);
+    border-top-color:var(--green);animation:spin .7s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
 
-  /* МОДАЛКА */
-  .overlay { position:fixed; inset:0; background:rgba(17,24,39,.6); backdrop-filter:blur(4px); z-index:1000; display:none; align-items:center; justify-content:center; padding:1rem; }
-  .overlay.show { display:flex; }
-  .modal {
-    background:#fff; border:1px solid var(--border);
-    border-radius:24px; padding:2.5rem;
-    max-width:430px; width:100%; text-align:center; position:relative;
-    box-shadow:0 20px 60px rgba(0,0,0,.15);
-    animation:pop .18s ease;
-  }
-  @keyframes pop { from{transform:scale(.93);opacity:0} to{transform:scale(1);opacity:1} }
-  .mclose { position:absolute; top:1rem; right:1rem; background:#F3F4F6; border:none; color:var(--muted); font-size:1rem; cursor:pointer; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
-  .mclose:hover { background:#E5E7EB; color:var(--text); }
-  .micon { font-size:2.8rem; margin-bottom:1rem; }
-  .modal h2 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:.6rem; color:var(--primary); }
-  .msub { color:var(--muted); font-size:.88rem; line-height:1.6; margin-bottom:1.4rem; }
-  .field { margin-bottom:1rem; text-align:left; }
-  .field label { display:block; font-size:.78rem; font-weight:700; color:var(--muted); margin-bottom:.4rem; letter-spacing:.5px; text-transform:uppercase; }
-  .field input {
-    width:100%; background:#F9FAFB;
-    border:1.5px solid var(--border); border-radius:10px;
-    padding:.75rem 1rem; font-family:'Nunito',sans-serif; font-size:.95rem;
-    color:var(--text); outline:none; transition:border-color .2s;
-  }
-  .field input:focus { border-color:var(--gold); background:#fff; }
-  .field input::placeholder { color:#CBD5E1; }
-  #loginErr {
-    background:#FEF2F2; border:1.5px solid #FECACA;
-    border-radius:8px; padding:.6rem .9rem;
-    font-size:.84rem; color:var(--red);
-    margin-bottom:1rem; display:none; text-align:left;
-  }
-  .sbtn {
-    width:100%; padding:.85rem;
-    background:var(--gold); color:#fff;
-    border:none; border-radius:12px;
-    font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700;
-    cursor:pointer; transition:all .2s;
-    box-shadow:0 4px 14px rgba(184,134,11,.35);
-  }
-  .sbtn:hover { background:var(--gold-l); transform:translateY(-1px); }
-  .sbtn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  /* МОДАЛКИ */
+  .overlay{position:fixed;inset:0;background:rgba(17,24,39,.6);backdrop-filter:blur(4px);
+    z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+  .overlay.show{display:flex;}
+  .modal{background:#fff;border:1px solid var(--border);border-radius:24px;padding:2.5rem;
+    max-width:430px;width:100%;text-align:center;position:relative;
+    box-shadow:0 20px 60px rgba(0,0,0,.15);animation:pop .18s ease;}
+  @keyframes pop{from{transform:scale(.93);opacity:0}to{transform:scale(1);opacity:1}}
+  .mclose{position:absolute;top:1rem;right:1rem;background:#F3F4F6;border:none;
+    color:var(--muted);font-size:1rem;cursor:pointer;width:30px;height:30px;
+    border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .mclose:hover{background:#E5E7EB;color:var(--text);}
+  .micon{font-size:2.8rem;margin-bottom:1rem;}
+  .modal h2{font-family:'Playfair Display',serif;font-size:1.5rem;margin-bottom:.6rem;color:var(--primary);}
+  .msub{color:var(--muted);font-size:.88rem;line-height:1.6;margin-bottom:1.4rem;}
+  .field{margin-bottom:1rem;text-align:left;}
+  .field label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);
+    margin-bottom:.4rem;letter-spacing:.5px;text-transform:uppercase;}
+  .field input{width:100%;background:#F9FAFB;border:1.5px solid var(--border);border-radius:10px;
+    padding:.75rem 1rem;font-family:'Nunito',sans-serif;font-size:.95rem;
+    color:var(--text);outline:none;transition:border-color .2s;}
+  .field input:focus{border-color:var(--gold);background:#fff;}
+  .field input::placeholder{color:#CBD5E1;}
+  #loginErr{background:#FEF2F2;border:1.5px solid #FECACA;border-radius:8px;
+    padding:.6rem .9rem;font-size:.84rem;color:var(--red);
+    margin-bottom:1rem;display:none;text-align:left;}
+  .sbtn{width:100%;padding:.85rem;background:var(--gold);color:#fff;border:none;
+    border-radius:12px;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;
+    cursor:pointer;transition:all .2s;box-shadow:0 4px 14px rgba(184,134,11,.35);}
+  .sbtn:hover{background:var(--gold-l);transform:translateY(-1px);}
+  .sbtn:disabled{opacity:.5;cursor:not-allowed;transform:none;}
 
-  .denied-modal { max-width:400px; }
-  footer { border-top:1px solid var(--border); padding:2rem; text-align:center; color:var(--muted); font-size:.85rem; background:#fff; }
+  footer{border-top:1px solid var(--border);padding:2rem;text-align:center;
+    color:var(--muted);font-size:.85rem;background:#fff;}
 
   @media(max-width:600px){
-    .hero { padding:3rem 1rem 2rem; }
-    .lessons-section { padding:1.5rem 1rem 4rem; }
-    header { padding:0 1rem; }
+    .hero{padding:3rem 1rem 2rem;}
+    .lessons-section{padding:1.5rem 1rem 4rem;}
+    header{padding:0 1rem;}
   }
-</style></head>
+</style>
+</head>
 <body>
 
 <header>
@@ -209,10 +157,7 @@
   <div class="hero-badge">🎓 Образовательная платформа</div>
   <h1>Уроки <em>Саидмурода</em><br>Давлатова</h1>
   <p>8 эксклюзивных онлайн-уроков по бизнесу, мышлению и личностному росту.</p>
-  <div id="statusBar">
-    <div class="dot"></div>
-    <span id="statusText"></span>
-  </div>
+  <div id="statusBar"><div class="dot"></div><span id="statusText"></span></div>
 </div>
 
 <div class="lessons-section">
@@ -221,9 +166,9 @@
   <div class="grid" id="lessonsGrid"></div>
 </div>
 
-<footer>© 2025 Давлатов Академия · Все права защищены</footer>
+<footer>© 2026 Давлатов Академия · Все права защищены</footer>
 
-<!-- МОДАЛКА: ЛОГИН -->
+<!-- ЛОГИН -->
 <div class="overlay" id="loginModal">
   <div class="modal">
     <button class="mclose" onclick="closeModal('loginModal')">✕</button>
@@ -231,161 +176,120 @@
     <h2>Вход в аккаунт</h2>
     <p class="msub">Введите логин и пароль, которые выдал администратор.</p>
     <div id="loginErr"></div>
-    <div class="field">
-      <label>Логин</label>
-      <input type="text" id="iLogin" placeholder="your_login" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
-    <div class="field">
-      <label>Пароль</label>
-      <input type="password" id="iPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    </div>
+    <div class="field"><label>Логин</label>
+      <input type="text" id="iLogin" placeholder="your_login" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field"><label>Пароль</label>
+      <input type="password" id="iPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
     <button class="sbtn" id="loginBtn2" onclick="doLogin()">Войти</button>
   </div>
 </div>
 
-<!-- МОДАЛКА: НЕТ ДОСТУПА -->
+<!-- НЕТ ДОСТУПА -->
 <div class="overlay" id="deniedModal">
-  <div class="modal denied-modal">
+  <div class="modal" style="max-width:400px">
     <button class="mclose" onclick="closeModal('deniedModal')">✕</button>
-    <div class="micon" id="deniedIcon">🚫</div>
-    <h2 id="deniedTitle">Доступ закрыт</h2>
-    <p class="msub" id="deniedText"></p>
-    <button class="sbtn" onclick="closeModal('deniedModal')" style="background:rgba(255,255,255,.08);color:var(--text);">Закрыть</button>
+    <div class="micon" id="dIcon">🚫</div>
+    <h2 id="dTitle">Доступ закрыт</h2>
+    <p class="msub" id="dText"></p>
+    <button class="sbtn" onclick="closeModal('deniedModal')" style="background:#F3F4F6;color:var(--text);box-shadow:none;">Закрыть</button>
   </div>
 </div>
 
 <script>
-// =====================================================
-// ШАГ 1 — ВСТАВЬ СЮДА URL СВОЕГО APPS SCRIPT
-// Получишь после деплоя (смотри инструкцию)
-// =====================================================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwAL0dV9bGGMfcgpaEj-836gGhUkBbZ2l3hV-np6hpzBcrhOusaHbbbMHki2DrT8ZSl/exec';
+// ═══════════════════════════════════════════
+// КОНФИГ — вставь URL своего Apps Script
+// ═══════════════════════════════════════════
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8Y0dl9PpQOBx1snvw9gMzX_SUHEKWO1o24M6b8L9uEobc2Nr_580aG7BOnX5xDXY/exec';
 
-// =====================================================
-// ШАГ 2 — ДАННЫЕ УРОКОВ
-// img: ''        → показывает эмодзи
-// img: 'https://...' → показывает твою афишу
-// Ссылку на видео НЕ ПИШИ ЗДЕСЬ — она хранится
-// только в Google Sheets!
-// =====================================================
+// ═══════════════════════════════════════════
+// УРОКИ
+// img: ''       → эмодзи на фоне
+// img: 'https://...' → своя афиша
+// parts: число частей (для отображения на карточке)
+// ═══════════════════════════════════════════
 const LESSONS = [
-  { id:1, title:'Основы предпринимательского мышления', desc:'Как думает успешный предприниматель. Первый шаг к изменению жизни.',  emoji:'🧠', img:'8888.png' },
-  { id:2, title:'Постановка целей и планирование',       desc:'Система целеполагания, которая работает. Практические инструменты.', emoji:'🎯', img:'9999.png' },
-  { id:3, title:'Управление временем и приоритеты',      desc:'Как успевать больше за меньшее время. Матрица Эйзенхауэра.',         emoji:'⏰', img:'6666.png' },
-  { id:4, title:'Финансовая грамотность',                desc:'Основы личных финансов. Активы и пассивы. Денежный поток.',           emoji:'💰', img:'7777.png' },
-  { id:5, title:'Продажи и переговоры',                  desc:'Техники продаж и искусство переговоров от практика.',                 emoji:'🤝', img:'3333.png' },
-  { id:6, title:'Маркетинг и личный бренд',              desc:'Как создать сильный личный бренд и привлекать клиентов.',             emoji:'📢', img:'5555.png' },
-  { id:7, title:'Лидерство и управление командой',       desc:'Качества настоящего лидера. Как мотивировать и вести за собой.',     emoji:'👑', img:'4444.png' },
-  { id:8, title:'Масштабирование бизнеса',               desc:'От малого бизнеса к системе. Делегирование и автоматизация.',         emoji:'🚀', img:'9999.png' },
+  {id:1,title:'Основы предпринимательского мышления',desc:'Как думает успешный предприниматель. Первый шаг к изменению жизни.',emoji:'🧠',img:'',parts:6},
+  {id:2,title:'Постановка целей и планирование',desc:'Система целеполагания, которая работает. Практические инструменты.',emoji:'🎯',img:'',parts:5},
+  {id:3,title:'Управление временем и приоритеты',desc:'Как успевать больше за меньшее время. Матрица Эйзенхауэра.',emoji:'⏰',img:'',parts:6},
+  {id:4,title:'Финансовая грамотность',desc:'Основы личных финансов. Активы и пассивы. Денежный поток.',emoji:'💰',img:'',parts:5},
+  {id:5,title:'Продажи и переговоры',desc:'Техники продаж и искусство переговоров от практика.',emoji:'🤝',img:'',parts:6},
+  {id:6,title:'Маркетинг и личный бренд',desc:'Как создать сильный личный бренд и привлекать клиентов.',emoji:'📢',img:'',parts:5},
+  {id:7,title:'Лидерство и управление командой',desc:'Качества настоящего лидера. Как мотивировать и вести за собой.',emoji:'👑',img:'',parts:6},
+  {id:8,title:'Масштабирование бизнеса',desc:'От малого бизнеса к системе. Делегирование и автоматизация.',emoji:'🚀',img:'',parts:5},
 ];
 
-// =====================================================
-// СОСТОЯНИЕ
-// =====================================================
 let user = null;
 
-window.addEventListener('load', () => {
-  const saved = sessionStorage.getItem('u');
-  if (saved) { user = JSON.parse(saved); refreshUI(); }
+window.addEventListener('load',()=>{
+  const s=sessionStorage.getItem('u');
+  if(s){user=JSON.parse(s);refreshUI();}
   renderLessons();
 });
 
-// =====================================================
-// ЛОГИН
-// =====================================================
-async function doLogin() {
-  const login = document.getElementById('iLogin').value.trim();
-  const pass  = document.getElementById('iPass').value;
-  if (!login || !pass) { showErr('Введите логин и пароль.'); return; }
-
-  const btn = document.getElementById('loginBtn2');
-  btn.disabled = true;
-  btn.textContent = 'Проверяем...';
-  hideErr();
-
-  try {
-    const res  = await fetch(`${SCRIPT_URL}?action=login&login=${encodeURIComponent(login)}&pass=${encodeURIComponent(pass)}`);
-    const data = await res.json();
-
-    if (data.ok) {
-      user = { login: data.login, name: data.name, lessons: data.lessons || [] };
-      sessionStorage.setItem('u', JSON.stringify(user));
-      document.getElementById('iPass').value = '';
-      closeModal('loginModal');
-      refreshUI();
-      renderLessons();
-    } else if (data.denied) {
-      showErr('Ваш доступ заблокирован администратором.');
-    } else {
-      showErr('Неверный логин или пароль.');
-    }
-  } catch(e) {
-    showErr('Ошибка соединения. Проверьте интернет.');
-  }
-
-  btn.disabled = false;
-  btn.textContent = 'Войти';
+async function doLogin(){
+  const login=document.getElementById('iLogin').value.trim();
+  const pass=document.getElementById('iPass').value;
+  if(!login||!pass){showErr('Введите логин и пароль.');return;}
+  const btn=document.getElementById('loginBtn2');
+  btn.disabled=true;btn.textContent='Проверяем...';hideErr();
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=login&login=${encodeURIComponent(login)}&pass=${encodeURIComponent(pass)}`);
+    const data=await res.json();
+    if(data.ok){
+      user={login:data.login,name:data.name,lessons:data.lessons||[]};
+      sessionStorage.setItem('u',JSON.stringify(user));
+      document.getElementById('iPass').value='';
+      closeModal('loginModal');refreshUI();renderLessons();
+    }else if(data.denied){showErr('Ваш доступ заблокирован.');
+    }else{showErr('Неверный логин или пароль.');}
+  }catch(e){showErr('Ошибка соединения.');}
+  btn.disabled=false;btn.textContent='Войти';
 }
 
-function showErr(msg) { const el = document.getElementById('loginErr'); el.textContent = '⚠ ' + msg; el.style.display = 'block'; }
-function hideErr()    { document.getElementById('loginErr').style.display = 'none'; }
+function showErr(m){const e=document.getElementById('loginErr');e.textContent='⚠ '+m;e.style.display='block';}
+function hideErr(){document.getElementById('loginErr').style.display='none';}
 
-function signOut() {
-  user = null;
-  sessionStorage.removeItem('u');
-  sessionStorage.removeItem('lesson_token');
-  refreshUI();
-  renderLessons();
+function signOut(){
+  user=null;sessionStorage.removeItem('u');sessionStorage.removeItem('lesson_token');
+  refreshUI();renderLessons();
 }
 
-// =====================================================
-// ИНТЕРФЕЙС
-// =====================================================
-function refreshUI() {
-  const on = !!user;
-  document.getElementById('loginBtn').style.display = on ? 'none' : 'block';
-  document.getElementById('userInfo').style.display = on ? 'flex'  : 'none';
-  if (on) {
-    const name = user.name || user.login;
-    document.getElementById('userInitial').textContent = name[0].toUpperCase();
-    document.getElementById('userName').textContent    = name;
+function refreshUI(){
+  const on=!!user;
+  document.getElementById('loginBtn').style.display=on?'none':'block';
+  document.getElementById('userInfo').style.display=on?'flex':'none';
+  if(on){
+    const name=user.name||user.login;
+    document.getElementById('userInitial').textContent=name[0].toUpperCase();
+    document.getElementById('userName').textContent=name;
     document.getElementById('statusBar').classList.add('show');
-    document.getElementById('statusText').textContent  = user.lessons.length > 0
-      ? `Добро пожаловать, ${name}! Открыто уроков: ${user.lessons.length}`
-      : `Вы вошли. Уроки пока не открыты — ожидайте администратора.`;
-  } else {
-    document.getElementById('statusBar').classList.remove('show');
-  }
+    document.getElementById('statusText').textContent=user.lessons.length>0
+      ?`Добро пожаловать, ${name}! Открыто уроков: ${user.lessons.length}`
+      :`Вы вошли. Уроки пока не открыты.`;
+  }else{document.getElementById('statusBar').classList.remove('show');}
 }
 
-// =====================================================
-// КАРТОЧКИ
-// =====================================================
-function renderLessons() {
-  const grid = document.getElementById('lessonsGrid');
-  grid.innerHTML = '';
-  LESSONS.forEach(l => {
-    const hasAccess = user && user.lessons.includes(l.id);
-    const card = document.createElement('div');
-    card.className = 'card';
-
-    const thumbContent = l.img
-      ? `<img src="${l.img}" alt="Урок ${l.id}" loading="lazy"><div class="thumb-overlay"></div>`
-      : l.emoji;
-
+function renderLessons(){
+  const grid=document.getElementById('lessonsGrid');
+  grid.innerHTML='';
+  LESSONS.forEach(l=>{
+    const ok=user&&user.lessons.includes(l.id);
+    const card=document.createElement('div');
+    card.className='card';
+    const thumb=l.img
+      ?`<img src="${l.img}" alt="" loading="lazy"><div class="thumb-overlay"></div>`
+      :l.emoji;
     let btn;
-    if (!user) {
-      btn = `<button class="card-btn cb-login" onclick="openModal('loginModal')">🔑 Войти для доступа</button>`;
-    } else if (hasAccess) {
-      btn = `<button class="card-btn cb-play" id="btn-${l.id}" onclick="watchLesson(${l.id}, this)">▶ Открыть урок</button>`;
-    } else {
-      btn = `<button class="card-btn cb-locked" disabled>🔒 Доступ закрыт</button>`;
-    }
+    if(!user) btn=`<button class="card-btn cb-login" onclick="openModal('loginModal')">🔑 Войти для доступа</button>`;
+    else if(ok) btn=`<button class="card-btn cb-play" id="btn-${l.id}" onclick="goLesson(${l.id},this)">▶ Открыть урок</button>`;
+    else btn=`<button class="card-btn cb-locked" disabled>🔒 Доступ закрыт</button>`;
 
-    card.innerHTML = `
-      <div class="thumb">${thumbContent}</div>
+    card.innerHTML=`
+      <div class="thumb">${thumb}
+        <div class="parts-pill">▶ ${l.parts} частей</div>
+      </div>
       <div class="badge b-num">Урок ${l.id}</div>
-      <div class="badge b-lock ${hasAccess ? 'open' : ''}">${hasAccess ? '▶ Открыт' : '🔒 Закрыт'}</div>
+      <div class="badge b-lock ${ok?'open':''}">${ok?'▶ Открыт':'🔒 Закрыт'}</div>
       <div class="card-body">
         <div class="card-title">${l.title}</div>
         <div class="card-desc">${l.desc}</div>
@@ -395,78 +299,54 @@ function renderLessons() {
   });
 }
 
-// =====================================================
-// ОТКРЫТЬ УРОК
-// 1. Нажал ▶ → спрашиваем Apps Script
-// 2. Apps Script проверяет таблицу ПРЯМО СЕЙЧАС
-// 3. Доступ есть → сохраняем токен → переходим на lesson.html
-// 4. lesson.html проверяет токен → показывает страницу урока
-// =====================================================
-async function watchLesson(lessonId, btnEl) {
-  if (!user) { openModal('loginModal'); return; }
-
-  btnEl.disabled  = true;
-  btnEl.innerHTML = `<div class="btn-spinner"></div> Проверяем...`;
-
-  try {
-    const res  = await fetch(`${SCRIPT_URL}?action=getVideo&login=${encodeURIComponent(user.login)}&lessonId=${lessonId}`);
-    const data = await res.json();
-
-    if (data.ok) {
-      // ✅ Доступ подтверждён — создаём токен и переходим на lesson.html
-      // ВАЖНО: videoUrl НЕ передаём клиенту!
-      // Ссылка на Google Vids хранится только в таблице
-      // При нажатии Play Apps Script сам сделает redirect
-      const lesson = LESSONS.find(l => l.id === lessonId);
-      sessionStorage.setItem('lesson_token', JSON.stringify({
-        lessonId:  lessonId,
-        title:     lesson.title,
-        desc:      lesson.desc,
-        userName:  user.name || user.login,
-        userLogin: user.login,
-        ts:        Date.now(),
+async function goLesson(lessonId,btnEl){
+  if(!user){openModal('loginModal');return;}
+  btnEl.disabled=true;
+  btnEl.innerHTML=`<div class="btn-spinner"></div> Проверяем...`;
+  try{
+    const res=await fetch(`${SCRIPT_URL}?action=checkLesson&login=${encodeURIComponent(user.login)}&lessonId=${lessonId}`);
+    const data=await res.json();
+    if(data.ok){
+      const l=LESSONS.find(x=>x.id===lessonId);
+      sessionStorage.setItem('lesson_token',JSON.stringify({
+        lessonId,title:l.title,desc:l.desc,
+        partsCount:data.partsCount,
+        userName:user.name||user.login,
+        userLogin:user.login,
+        ts:Date.now()
       }));
-      window.location.href = 'lesson.html';
-
-    } else if (data.denied) {
-      showDenied('🚫', 'Доступ закрыт', 'Администратор закрыл вам доступ. Обратитесь для уточнения.');
-      user.lessons = user.lessons.filter(id => id !== lessonId);
-      sessionStorage.setItem('u', JSON.stringify(user));
+      window.location.href='lesson.html';
+    }else if(data.denied){
+      showDenied('🚫','Доступ закрыт','Администратор закрыл ваш доступ.');
+      user.lessons=user.lessons.filter(id=>id!==lessonId);
+      sessionStorage.setItem('u',JSON.stringify(user));
       renderLessons();
-
-    } else {
-      showDenied('🔒', 'Нет доступа', 'Этот урок вам недоступен. Обратитесь к администратору.');
-      btnEl.disabled  = false;
-      btnEl.innerHTML = '▶ Открыть урок';
+    }else{
+      showDenied('🔒','Нет доступа','Этот урок вам недоступен.');
+      btnEl.disabled=false;btnEl.innerHTML='▶ Открыть урок';
     }
-  } catch(e) {
-    showDenied('⚠', 'Ошибка соединения', 'Не удалось проверить доступ. Проверьте интернет.');
-    btnEl.disabled  = false;
-    btnEl.innerHTML = '▶ Открыть урок';
+  }catch(e){
+    showDenied('⚠','Ошибка','Проверьте интернет и попробуйте снова.');
+    btnEl.disabled=false;btnEl.innerHTML='▶ Открыть урок';
   }
 }
 
-function showDenied(icon, title, text) {
-  document.getElementById('deniedIcon').textContent  = icon;
-  document.getElementById('deniedTitle').textContent = title;
-  document.getElementById('deniedText').textContent  = text;
+function showDenied(i,t,m){
+  document.getElementById('dIcon').textContent=i;
+  document.getElementById('dTitle').textContent=t;
+  document.getElementById('dText').textContent=m;
   openModal('deniedModal');
 }
-
-function openModal(id) {
+function openModal(id){
   document.getElementById(id).classList.add('show');
-  if (id === 'loginModal') setTimeout(() => document.getElementById('iLogin').focus(), 80);
+  if(id==='loginModal')setTimeout(()=>document.getElementById('iLogin').focus(),80);
 }
-function closeModal(id) {
+function closeModal(id){
   document.getElementById(id).classList.remove('show');
-  if (id === 'loginModal') hideErr();
+  if(id==='loginModal')hideErr();
 }
-document.querySelectorAll('.overlay').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target !== el) return;
-    el.classList.remove('show');
-    hideErr();
-  });
+document.querySelectorAll('.overlay').forEach(el=>{
+  el.addEventListener('click',e=>{if(e.target!==el)return;el.classList.remove('show');hideErr();});
 });
 </script>
 </body>
