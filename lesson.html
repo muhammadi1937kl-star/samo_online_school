@@ -4,167 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Урок — Давлатов Академия</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --gold:#B8860B;--gold-l:#DAA520;--gold-bg:#FFF8E7;
-    --primary:#1A1A2E;--bg:#F5F7FA;--text:#1A1A2E;
-    --muted:#6B7280;--border:#E5E7EB;
-    --green:#059669;--green-bg:#ECFDF5;
-    --sh:0 2px 16px rgba(0,0,0,.08);
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;}
+:root {
+  --gold: #B8860B; --gold-l: #DAA520; --gold-bg: #FFF8E7;
+  --primary: #1A1A2E; --bg: #F4F6FA; --card: #FFFFFF;
+  --text: #1A1A2E; --muted: #6B7280; --border: #E5E7EB;
+  --green: #059669; --green-bg: #ECFDF5;
+  --sh: 0 2px 20px rgba(0,0,0,.07); --sh-h: 0 8px 36px rgba(0,0,0,.13);
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
 
-  /* ШАПКА */
-  header{background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.06);
-    padding:0 2rem;height:65px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;}
-  .logo{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--primary);text-decoration:none;}
-  .logo span{color:var(--gold);}
-  .back-btn{display:flex;align-items:center;gap:.5rem;background:#F3F4F6;border:1px solid var(--border);
-    color:var(--muted);border-radius:10px;padding:.45rem 1rem;font-family:'Nunito',sans-serif;
-    font-size:.88rem;font-weight:700;text-decoration:none;transition:all .2s;}
-  .back-btn:hover{background:#E5E7EB;color:var(--text);}
-  .user-pill{display:none;align-items:center;gap:.5rem;background:var(--gold-bg);
-    border:1.5px solid rgba(184,134,11,.25);border-radius:20px;padding:.3rem .9rem .3rem .4rem;
-    font-size:.85rem;font-weight:600;}
-  .avatar-sm{width:28px;height:28px;border-radius:50%;background:var(--gold);color:#fff;
-    font-weight:700;font-size:.8rem;display:flex;align-items:center;justify-content:center;}
+/* HEADER */
+header { background:#fff; border-bottom:1px solid var(--border); box-shadow:0 1px 10px rgba(0,0,0,.06); height:64px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between; padding:0 2.5rem; position:sticky; top:0; z-index:100; }
+.logo { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:900; color:var(--primary); text-decoration:none; }
+.logo span { color:var(--gold); }
+.header-right { display:flex; align-items:center; gap:1rem; }
+.user-pill { display:flex; align-items:center; gap:.55rem; background:var(--gold-bg); border:1.5px solid rgba(184,134,11,.25); border-radius:22px; padding:.3rem 1rem .3rem .4rem; font-size:.85rem; font-weight:700; }
+.avatar-sm { width:30px; height:30px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-l)); color:#fff; font-weight:800; font-size:.8rem; display:flex; align-items:center; justify-content:center; }
+.back-btn { display:flex; align-items:center; gap:.45rem; background:#F3F4F6; border:1px solid var(--border); color:var(--muted); border-radius:10px; padding:.45rem 1.1rem; font-family:'Nunito',sans-serif; font-size:.87rem; font-weight:700; text-decoration:none; transition:all .2s; }
+.back-btn:hover { background:#E5E7EB; color:var(--text); }
 
-  /* ОСНОВНОЙ КОНТЕНТ */
-  main{flex:1;max-width:960px;width:100%;margin:0 auto;padding:2rem 2rem 4rem;}
+/* MAIN */
+main { flex:1; max-width:860px; width:100%; margin:0 auto; padding:2rem 2rem 5rem; }
 
-  .breadcrumb{font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;
-    display:flex;align-items:center;gap:.5rem;}
-  .breadcrumb a{color:var(--muted);text-decoration:none;}
-  .breadcrumb a:hover{color:var(--gold);}
+/* BREADCRUMB */
+.breadcrumb { font-size:.82rem; color:var(--muted); display:flex; align-items:center; gap:.45rem; margin-bottom:1.5rem; }
+.breadcrumb a { color:var(--muted); text-decoration:none; transition:color .2s; }
+.breadcrumb a:hover { color:var(--gold); }
 
-  .lesson-badge{display:inline-block;background:var(--gold-bg);border:1.5px solid rgba(184,134,11,.3);
-    color:var(--gold);font-size:.78rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
-    padding:.35rem .9rem;border-radius:20px;margin-bottom:.8rem;}
-  .lesson-title{font-family:'Playfair Display',serif;font-size:clamp(1.4rem,4vw,2rem);
-    font-weight:900;line-height:1.2;margin-bottom:.5rem;color:var(--primary);}
-  .lesson-meta{color:var(--muted);font-size:.85rem;margin-bottom:1.5rem;font-weight:600;}
+/* LESSON HERO */
+.lesson-hero { background:linear-gradient(135deg,#0F0F1A 0%,#1c1c32 55%,#141425 100%); border-radius:22px; padding:2.2rem 2.8rem; margin-bottom:2.5rem; position:relative; overflow:hidden; box-shadow:0 10px 40px rgba(0,0,0,.28); }
+.lesson-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 75% 50%,rgba(184,134,11,.2) 0%,transparent 58%); pointer-events:none; }
+.lesson-hero::after { content:''; position:absolute; bottom:-80px; right:-80px; width:260px; height:260px; border-radius:50%; background:radial-gradient(circle,rgba(218,165,32,.1),transparent 65%); pointer-events:none; }
+.lh-badge { display:inline-block; background:rgba(184,134,11,.22); border:1.5px solid rgba(184,134,11,.5); color:var(--gold-l); font-size:.73rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; padding:.32rem .95rem; border-radius:20px; margin-bottom:.9rem; position:relative; z-index:1; }
+.lh-title { font-family:'Playfair Display',serif; font-size:clamp(1.5rem,3.5vw,2.2rem); font-weight:900; color:#fff; line-height:1.2; margin-bottom:.7rem; position:relative; z-index:1; }
+.lh-meta { display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap; color:rgba(255,255,255,.5); font-size:.87rem; font-weight:600; position:relative; z-index:1; }
+.lh-meta span { display:flex; align-items:center; gap:.4rem; }
+.lh-desc { margin-top:1rem; color:rgba(255,255,255,.42); font-size:.9rem; line-height:1.65; position:relative; z-index:1; }
 
-  /* ═══ НАВИГАЦИЯ ПО ЧАСТЯМ ═══ */
-  .parts-nav{display:flex;gap:.6rem;flex-wrap:wrap;margin-bottom:1.2rem;}
-  .part-btn{
-    padding:.5rem 1rem;border-radius:10px;
-    font-family:'Nunito',sans-serif;font-size:.85rem;font-weight:700;
-    cursor:pointer;border:1.5px solid var(--border);
-    background:#fff;color:var(--muted);transition:all .2s;
-  }
-  .part-btn:hover{border-color:var(--gold);color:var(--gold);}
-  .part-btn.active{background:var(--gold);color:#fff;border-color:var(--gold);
-    box-shadow:0 2px 10px rgba(184,134,11,.35);}
-  .part-btn.done{background:var(--green-bg);color:var(--green);border-color:rgba(5,150,105,.3);}
-  .part-btn.loading{opacity:.6;cursor:wait;}
+/* SECTION TITLE */
+.sec-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--primary); margin-bottom:1.2rem; display:flex; align-items:center; gap:.7rem; }
+.sec-title::after { content:''; flex:1; height:2px; background:linear-gradient(90deg,var(--border),transparent); border-radius:2px; }
 
-  /* ═══ ПЛЕЕР ═══ */
-  .player-block{background:#000;border-radius:20px;overflow:hidden;
-    margin-bottom:1rem;box-shadow:0 8px 32px rgba(0,0,0,.2);position:relative;}
+/* PARTS LIST */
+.parts-list { display:flex; flex-direction:column; gap:1rem; }
 
-  /* Превью до нажатия */
-  .player-preview{
-    width:100%;aspect-ratio:16/9;
-    background:linear-gradient(135deg,#1A1A2E,#2D2D44,#1A1A35);
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;
-    position:relative;overflow:hidden;cursor:pointer;
-  }
-  .player-preview::before{content:'';position:absolute;inset:0;
-    background:radial-gradient(ellipse at 50% 50%,rgba(184,134,11,.15) 0%,transparent 65%);}
-  .play-ring{width:80px;height:80px;border-radius:50%;background:var(--gold);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 4px 30px rgba(184,134,11,.6);
-    animation:pulse 2s ease-in-out infinite;
-    position:relative;z-index:1;flex-shrink:0;transition:transform .2s;}
-  .player-preview:hover .play-ring{transform:scale(1.1);}
-  .play-ring svg{width:32px;height:32px;margin-left:4px;}
-  @keyframes pulse{0%,100%{box-shadow:0 4px 30px rgba(184,134,11,.5);}50%{box-shadow:0 4px 50px rgba(184,134,11,.9);}}
-  .preview-text{text-align:center;position:relative;z-index:1;}
-  .preview-text h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
-  .preview-text p{color:rgba(255,255,255,.55);font-size:.85rem;}
+/* PART ITEM */
+.part-item { background:var(--card); border:1.5px solid var(--border); border-radius:18px; overflow:hidden; box-shadow:var(--sh); transition:box-shadow .25s, border-color .25s; display:flex; align-items:stretch; min-height:110px; }
+.part-item:hover { box-shadow:var(--sh-h); border-color:rgba(184,134,11,.35); }
+.part-item.done { border-color:rgba(5,150,105,.3); }
+.part-item.loading { opacity:.7; }
 
-  /* Спиннер загрузки */
-  .player-loading{width:100%;aspect-ratio:16/9;background:#111;
-    display:none;align-items:center;justify-content:center;flex-direction:column;gap:1rem;}
-  .player-loading.show{display:flex;}
-  .spinner{width:44px;height:44px;border-radius:50%;
-    border:3px solid rgba(184,134,11,.2);border-top-color:var(--gold);
-    animation:spin .8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .player-loading p{color:rgba(255,255,255,.5);font-size:.88rem;}
+/* LEFT THUMB */
+.pi-thumb { width:180px; flex-shrink:0; background:linear-gradient(135deg,#0F0F1A,#1c1c32,#13132a); position:relative; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.pi-thumb::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 55%,rgba(184,134,11,.2),transparent 65%); }
+.part-item.done .pi-thumb { background:linear-gradient(135deg,#0a1f16,#0d2b1e,#0a1a12); }
+.part-item.done .pi-thumb::before { background:radial-gradient(ellipse at 50% 55%,rgba(5,150,105,.25),transparent 65%); }
+.pi-num { position:absolute; top:8px; left:10px; background:rgba(0,0,0,.55); color:rgba(255,255,255,.75); font-size:.68rem; font-weight:800; letter-spacing:.8px; text-transform:uppercase; padding:.18rem .6rem; border-radius:6px; backdrop-filter:blur(4px); }
+.pi-done-lbl { position:absolute; bottom:8px; left:50%; transform:translateX(-50%); background:rgba(5,150,105,.85); color:#fff; font-size:.67rem; font-weight:800; padding:.18rem .7rem; border-radius:6px; white-space:nowrap; display:none; backdrop-filter:blur(4px); }
+.part-item.done .pi-done-lbl { display:block; }
 
-  /* iframe плеер */
-  .player-iframe{width:100%;aspect-ratio:16/9;display:none;}
-  .player-iframe.show{display:block;}
-  .player-iframe iframe{width:100%;height:100%;border:none;display:block;}
+/* PLAY BUTTON */
+.pi-play { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,var(--gold),var(--gold-l)); display:flex; align-items:center; justify-content:center; box-shadow:0 4px 22px rgba(184,134,11,.65); position:relative; z-index:1; transition:transform .2s, box-shadow .2s; flex-shrink:0; animation:pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow:0 4px 22px rgba(184,134,11,.55); } 50% { box-shadow:0 4px 36px rgba(184,134,11,.9); } }
+.part-item:hover .pi-play { transform:scale(1.12); animation:none; box-shadow:0 6px 30px rgba(184,134,11,.9); }
+.part-item.done .pi-play { background:linear-gradient(135deg,var(--green),#10b981); box-shadow:0 4px 22px rgba(5,150,105,.5); animation:none; }
+.pi-play svg { width:20px; height:20px; margin-left:3px; }
 
-  /* Нижняя полоска плеера */
-  .player-footer{background:#fff;border:1px solid var(--border);border-top:none;
-    border-radius:0 0 20px 20px;padding:.8rem 1.5rem;
-    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
-  .pf-left{color:var(--muted);font-size:.82rem;font-weight:600;}
-  .access-badge{display:inline-flex;align-items:center;gap:.4rem;
-    background:var(--green-bg);border:1.5px solid rgba(5,150,105,.25);
-    color:var(--green);border-radius:8px;padding:.25rem .8rem;font-size:.78rem;font-weight:700;}
+/* SPINNER */
+.pi-spinner { position:absolute; inset:0; z-index:10; background:rgba(0,0,0,.72); display:none; align-items:center; justify-content:center; flex-direction:column; gap:.5rem; backdrop-filter:blur(3px); }
+.pi-spinner.show { display:flex; }
+.spin { width:32px; height:32px; border-radius:50%; border:3px solid rgba(184,134,11,.25); border-top-color:var(--gold); animation:spinn .7s linear infinite; }
+@keyframes spinn { to { transform:rotate(360deg); } }
+.pi-spinner p { color:rgba(255,255,255,.6); font-size:.75rem; font-weight:600; }
 
-  /* Кнопка следующей части */
-  .next-btn{width:100%;padding:.85rem;background:var(--gold);color:#fff;
-    border:none;border-radius:14px;font-family:'Nunito',sans-serif;
-    font-size:.95rem;font-weight:700;cursor:pointer;transition:all .2s;
-    display:none;align-items:center;justify-content:center;gap:.5rem;
-    box-shadow:0 4px 14px rgba(184,134,11,.35);margin-bottom:1rem;}
-  .next-btn.show{display:flex;}
-  .next-btn:hover{background:var(--gold-l);transform:translateY(-1px);}
+/* ERROR OVERLAY */
+.pi-error { position:absolute; inset:0; z-index:10; background:rgba(180,20,20,.9); display:none; align-items:center; justify-content:center; flex-direction:column; gap:.3rem; padding:.8rem; text-align:center; backdrop-filter:blur(3px); cursor:default; }
+.pi-error.show { display:flex; }
+.pi-error p { color:#fff; font-size:.75rem; font-weight:700; line-height:1.3; }
+.pi-error button { margin-top:.3rem; background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:#fff; border-radius:6px; padding:.2rem .7rem; font-family:'Nunito',sans-serif; font-size:.73rem; font-weight:700; cursor:pointer; transition:background .2s; }
+.pi-error button:hover { background:rgba(255,255,255,.3); }
 
-  /* Ошибка */
-  .error-box{background:#FEF2F2;border:1.5px solid #FECACA;border-radius:14px;
-    padding:1.5rem 2rem;display:none;text-align:center;margin-bottom:1rem;}
-  .error-box.show{display:block;}
-  .error-box h4{color:#DC2626;margin-bottom:.5rem;}
-  .error-box p{color:#7F1D1D;font-size:.88rem;}
+/* RIGHT INFO */
+.pi-info { flex:1; padding:1.1rem 1.5rem; display:flex; flex-direction:column; justify-content:center; gap:.4rem; }
+.pi-title { font-family:'Playfair Display',serif; font-size:1.05rem; font-weight:700; color:var(--primary); line-height:1.3; }
+.pi-sub { font-size:.82rem; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:.4rem; flex-wrap:wrap; }
+.pi-sub .tag { background:#F3F4F6; border-radius:6px; padding:.15rem .6rem; font-size:.74rem; color:var(--muted); }
+.part-item.done .pi-sub .tag { background:var(--green-bg); color:var(--green); }
 
-  /* Описание */
-  .desc-block{background:#fff;border:1px solid var(--border);border-radius:16px;
-    padding:1.5rem 2rem;box-shadow:var(--sh);}
-  .desc-block h4{font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;
-    color:var(--gold);margin-bottom:.8rem;}
-  .desc-block p{color:var(--muted);line-height:1.7;font-size:.95rem;}
+/* OPEN BUTTON */
+.pi-btn { align-self:flex-start; margin-top:.55rem; background:linear-gradient(135deg,var(--gold),var(--gold-l)); color:#fff; border:none; border-radius:10px; padding:.55rem 1.2rem; font-family:'Nunito',sans-serif; font-size:.85rem; font-weight:800; cursor:pointer; box-shadow:0 3px 12px rgba(184,134,11,.35); transition:all .2s; display:flex; align-items:center; gap:.4rem; }
+.pi-btn:hover { filter:brightness(1.08); transform:translateY(-1px); }
+.part-item.done .pi-btn { background:linear-gradient(135deg,var(--green),#10b981); box-shadow:0 3px 12px rgba(5,150,105,.3); }
+.pi-btn:disabled { opacity:.55; cursor:not-allowed; transform:none; filter:none; }
 
-  /* БЛОКИРОВКА */
-  #blockedScreen{display:none;flex:1;align-items:center;justify-content:center;
-    flex-direction:column;gap:1.5rem;text-align:center;padding:2rem;background:var(--bg);}
-  #blockedScreen.show{display:flex;}
-  .bl-icon{font-size:4rem;}
-  .bl-title{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;color:var(--primary);}
-  .bl-sub{color:var(--muted);max-width:420px;line-height:1.7;font-size:.95rem;}
-  .countdown{color:var(--muted);font-size:.9rem;}
-  .countdown strong{color:var(--gold);font-size:1.1rem;}
-  .go-home{background:var(--gold);color:#fff;border:none;border-radius:12px;padding:.8rem 2rem;
-    font-family:'Nunito',sans-serif;font-size:1rem;font-weight:700;cursor:pointer;
-    text-decoration:none;display:inline-block;transition:all .2s;
-    box-shadow:0 4px 14px rgba(184,134,11,.35);}
-  .go-home:hover{background:var(--gold-l);transform:translateY(-1px);}
+/* ACCESS FOOTER */
+.access-footer { margin-top:1.8rem; background:#fff; border:1px solid var(--border); border-radius:14px; padding:.85rem 1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:.5rem; font-size:.82rem; color:var(--muted); font-weight:600; }
+.access-badge { display:inline-flex; align-items:center; gap:.4rem; background:var(--green-bg); border:1.5px solid rgba(5,150,105,.25); color:var(--green); border-radius:8px; padding:.25rem .9rem; font-size:.8rem; font-weight:700; }
 
-  footer{border-top:1px solid var(--border);padding:1.5rem 2rem;text-align:center;
-    color:var(--muted);font-size:.82rem;flex-shrink:0;background:#fff;}
+/* BLOCKED */
+#blockedScreen { display:none; flex:1; align-items:center; justify-content:center; flex-direction:column; gap:1.5rem; text-align:center; padding:2rem; background:var(--bg); }
+#blockedScreen.show { display:flex; }
+.bl-icon { font-size:4rem; }
+.bl-title { font-family:'Playfair Display',serif; font-size:2rem; font-weight:700; color:var(--primary); }
+.bl-sub { color:var(--muted); max-width:400px; line-height:1.7; font-size:.93rem; }
+.countdown { color:var(--muted); font-size:.9rem; }
+.countdown strong { color:var(--gold); font-size:1.1rem; }
+.go-home { background:linear-gradient(135deg,var(--gold),var(--gold-l)); color:#fff; border:none; border-radius:12px; padding:.8rem 2rem; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; text-decoration:none; display:inline-block; box-shadow:0 4px 16px rgba(184,134,11,.4); transition:all .2s; }
+.go-home:hover { filter:brightness(1.08); transform:translateY(-1px); }
 
-  @media(max-width:600px){
-    header{padding:0 1rem;}
-    main{padding:1.2rem 1rem 3rem;}
-    .player-footer{flex-direction:column;align-items:flex-start;}
-    .parts-nav{gap:.4rem;}
-    .part-btn{font-size:.8rem;padding:.4rem .8rem;}
-  }
+footer { border-top:1px solid var(--border); padding:1.5rem 2rem; text-align:center; color:var(--muted); font-size:.82rem; flex-shrink:0; background:#fff; }
+
+@media (max-width:580px) {
+  header { padding:0 1rem; }
+  main { padding:1.2rem 1rem 4rem; }
+  .lesson-hero { padding:1.6rem 1.4rem; }
+  .part-item { flex-direction:column; min-height:auto; }
+  .pi-thumb { width:100%; height:120px; }
+  .pi-info { padding:1rem 1.2rem; }
+  .pi-btn { width:100%; justify-content:center; }
+}
 </style>
 </head>
 <body>
 
 <header>
   <a href="index.html" class="logo">Давлатов <span>Академия</span></a>
-  <div style="display:flex;align-items:center;gap:1rem;">
-    <div class="user-pill" id="userPill">
+  <div class="header-right">
+    <div class="user-pill" id="userPill" style="display:none;">
       <div class="avatar-sm" id="userInitial"></div>
       <span id="userName"></span>
     </div>
@@ -172,7 +141,6 @@
   </div>
 </header>
 
-<!-- СТРАНИЦА УРОКА -->
 <main id="lessonPage" style="display:none;">
 
   <div class="breadcrumb">
@@ -181,66 +149,26 @@
     <span id="bcTitle"></span>
   </div>
 
-  <div class="lesson-badge" id="lessonNum"></div>
-  <h1 class="lesson-title" id="lessonTitle"></h1>
-  <p class="lesson-meta">🎓 Саидмурод Давлатов</p>
-
-  <!-- КНОПКИ ЧАСТЕЙ -->
-  <div class="parts-nav" id="partsNav"></div>
-
-  <!-- ПЛЕЕР -->
-  <div class="player-block" id="playerBlock">
-
-    <!-- Превью (до нажатия на часть) -->
-    <div class="player-preview" id="playerPreview">
-      <div class="play-ring">
-        <svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-      </div>
-      <div class="preview-text">
-        <h3 id="previewTitle"></h3>
-        <p>Выберите часть урока выше и нажмите для просмотра</p>
-      </div>
+  <div class="lesson-hero">
+    <div class="lh-badge" id="lessonNum"></div>
+    <h1 class="lh-title" id="lessonTitle"></h1>
+    <div class="lh-meta">
+      <span>🎓 Саидмурод Давлатов</span>
+      <span id="partsCountMeta"></span>
     </div>
-
-    <!-- Загрузка -->
-    <div class="player-loading" id="playerLoading">
-      <div class="spinner"></div>
-      <p id="loadingText">Загружаем часть...</p>
-    </div>
-
-    <!-- iframe -->
-    <div class="player-iframe" id="playerIframe">
-      <iframe id="videoFrame" src="" allowfullscreen referrerpolicy="no-referrer"></iframe>
-    </div>
-
+    <p class="lh-desc" id="lessonDesc"></p>
   </div>
 
-  <!-- Нижняя полоска -->
-  <div class="player-footer">
-    <div class="pf-left">🔒 Доступ защищён · Проверка при каждом просмотре</div>
+  <div class="sec-title"><span>📹 Части урока</span></div>
+  <div class="parts-list" id="partsList"></div>
+
+  <div class="access-footer">
+    <div>🔒 Доступ защищён · Ссылки проверяются при каждом открытии</div>
     <div class="access-badge">✓ Доступ открыт</div>
-  </div>
-
-  <!-- Кнопка "Следующая часть" -->
-  <button class="next-btn" id="nextBtn" onclick="playNextPart()">
-    Следующая часть →
-  </button>
-
-  <!-- Ошибка -->
-  <div class="error-box" id="errorBox">
-    <h4 id="errTitle">🚫 Ошибка</h4>
-    <p id="errText"></p>
-  </div>
-
-  <!-- Описание урока -->
-  <div class="desc-block">
-    <h4>📖 Об этом уроке</h4>
-    <p id="lessonDesc"></p>
   </div>
 
 </main>
 
-<!-- БЛОКИРОВКА -->
 <div id="blockedScreen">
   <div class="bl-icon">🚫</div>
   <div class="bl-title">Доступ запрещён</div>
@@ -249,222 +177,130 @@
   <a href="index.html" class="go-home">← На главную</a>
 </div>
 
-<footer>© 2025 Давлатов Академия · Все права защищены</footer>
+<footer>© 2026 Давлатов Академия · Все права защищены</footer>
 
 <script>
-/*
-  КАК РАБОТАЕТ СИСТЕМА ЧАСТЕЙ:
-
-  В Google Sheets для каждого урока хранятся ID частей:
-  Урок 1: "ч1:ID_VIDS_1, ч2:ID_VIDS_2, ч3:ID_VIDS_3 ..."
-
-  Когда пользователь нажимает "Часть 1":
-  1. Сайт запрашивает Apps Script: "Дай ID части 1 урока 1"
-  2. Apps Script проверяет доступ ПРЯМО СЕЙЧАС
-  3. Возвращает ID видео Google Vids
-  4. Мы открываем видео в новой вкладке (Google Vids не поддерживает iframe)
-
-  Пользователь видит кнопки частей — но не видит ссылки Google Vids!
-  Ссылки хранятся только в таблице.
-*/
-
-// ═══════════════════════════════════════
-// КОНФИГ — тот же URL что в index.html
-// ═══════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8Y0dl9PpQOBx1snvw9gMzX_SUHEKWO1o24M6b8L9uEobc2Nr_580aG7BOnX5xDXY/exec';
 
-let token       = null; // данные из sessionStorage
-let currentPart = 0;    // текущая активная часть (1-based)
-let totalParts  = 0;    // всего частей в уроке
-let doneParts   = [];   // уже просмотренные части
+let token      = null;
+let totalParts = 0;
+let doneParts  = [];
 
-// ═══════════════════════════════════════
-// ЗАГРУЗКА СТРАНИЦЫ — проверяем токен
-// ═══════════════════════════════════════
 window.addEventListener('load', () => {
   const raw = sessionStorage.getItem('lesson_token');
   if (!raw) { showBlocked(); return; }
-
-  try { token = JSON.parse(raw); }
-  catch(e) { showBlocked(); return; }
-
-  // Токен живёт 10 минут
-  if (!token.ts || Date.now() - token.ts > 10 * 60 * 1000) {
-    sessionStorage.removeItem('lesson_token');
-    showBlocked(); return;
-  }
-  if (!token.lessonId || !token.userLogin) {
-    sessionStorage.removeItem('lesson_token');
-    showBlocked(); return;
-  }
-
-  // ✅ Удаляем токен и показываем страницу
+  try { token = JSON.parse(raw); } catch(e) { showBlocked(); return; }
+  if (!token.ts || Date.now() - token.ts > 10 * 60 * 1000) { sessionStorage.removeItem('lesson_token'); showBlocked(); return; }
+  if (!token.lessonId || !token.userLogin) { sessionStorage.removeItem('lesson_token'); showBlocked(); return; }
   sessionStorage.removeItem('lesson_token');
   totalParts = token.partsCount || 1;
   showLesson();
 });
 
-// ═══════════════════════════════════════
-// ПОКАЗЫВАЕМ СТРАНИЦУ УРОКА
-// ═══════════════════════════════════════
 function showLesson() {
-  document.title = `Урок ${token.lessonId}: ${token.title} — Давлатов Академия`;
-
-  // Шапка
-  document.getElementById('userPill').style.display  = 'flex';
-  document.getElementById('userInitial').textContent = (token.userName||token.userLogin)[0].toUpperCase();
-  document.getElementById('userName').textContent    = token.userName || token.userLogin;
-
-  // Заголовки
-  document.getElementById('bcTitle').textContent     = `Урок ${token.lessonId}`;
-  document.getElementById('lessonNum').textContent   = `Урок ${token.lessonId}`;
-  document.getElementById('lessonTitle').textContent = token.title;
-  document.getElementById('previewTitle').textContent = token.title;
-  document.getElementById('lessonDesc').textContent  = token.desc || '';
-
-  // Строим кнопки частей
-  buildPartsNav();
-
+  document.title = 'Урок ' + token.lessonId + ': ' + token.title + ' — Давлатов Академия';
+  document.getElementById('userPill').style.display   = 'flex';
+  document.getElementById('userInitial').textContent  = (token.userName || token.userLogin)[0].toUpperCase();
+  document.getElementById('userName').textContent     = token.userName || token.userLogin;
+  document.getElementById('bcTitle').textContent      = 'Урок ' + token.lessonId;
+  document.getElementById('lessonNum').textContent    = 'Урок ' + token.lessonId;
+  document.getElementById('lessonTitle').textContent  = token.title;
+  document.getElementById('lessonDesc').textContent   = token.desc || '';
+  document.getElementById('partsCountMeta').textContent = '📚 ' + totalParts + ' ' + pluralParts(totalParts);
+  buildList();
   document.getElementById('lessonPage').style.display = 'block';
-
-  // Автоматически запускаем Часть 1
-  playPart(1);
 }
 
-// ═══════════════════════════════════════
-// СТРОИМ КНОПКИ ЧАСТЕЙ
-// ═══════════════════════════════════════
-function buildPartsNav() {
-  const nav = document.getElementById('partsNav');
-  nav.innerHTML = '';
+function pluralParts(n) {
+  if (n % 10 === 1 && n % 100 !== 11) return 'часть';
+  if ([2,3,4].includes(n % 10) && ![12,13,14].includes(n % 100)) return 'части';
+  return 'частей';
+}
+
+function buildList() {
+  const list = document.getElementById('partsList');
+  list.innerHTML = '';
   for (let i = 1; i <= totalParts; i++) {
-    const btn = document.createElement('button');
-    btn.className = 'part-btn';
-    btn.id        = `part-btn-${i}`;
-    btn.textContent = `Часть ${i}`;
-    btn.onclick   = () => playPart(i);
-    nav.appendChild(btn);
+    const item = document.createElement('div');
+    item.className = 'part-item';
+    item.id = 'item-' + i;
+    item.innerHTML =
+      '<div class="pi-thumb" id="thumb-' + i + '" onclick="openPart(' + i + ')">' +
+        '<div class="pi-num">Часть ' + i + '</div>' +
+        '<div class="pi-done-lbl">✓ Просмотрено</div>' +
+        '<div class="pi-play" id="play-' + i + '">' +
+          '<svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
+        '</div>' +
+        '<div class="pi-spinner" id="spin-' + i + '">' +
+          '<div class="spin"></div><p>Открываем...</p>' +
+        '</div>' +
+        '<div class="pi-error" id="err-' + i + '">' +
+          '<p id="errMsg-' + i + '">Ошибка</p>' +
+          '<button onclick="event.stopPropagation();closeErr(' + i + ')">Закрыть</button>' +
+        '</div>' +
+      '</div>' +
+      '<div class="pi-info">' +
+        '<div class="pi-title">Часть ' + i + ' из ' + totalParts + '</div>' +
+        '<div class="pi-sub">🎬 Google Vids &nbsp;·&nbsp; откроется в новой вкладке <span class="tag" id="tag-' + i + '">Не открыто</span></div>' +
+        '<button class="pi-btn" id="btn-' + i + '" onclick="openPart(' + i + ')">' +
+          '▶ Смотреть часть ' + i +
+        '</button>' +
+      '</div>';
+    list.appendChild(item);
   }
 }
 
-// ═══════════════════════════════════════
-// ОБНОВЛЯЕМ СОСТОЯНИЕ КНОПОК
-// ═══════════════════════════════════════
-function updateNavButtons() {
-  for (let i = 1; i <= totalParts; i++) {
-    const btn = document.getElementById(`part-btn-${i}`);
-    if (!btn) continue;
-    btn.className = 'part-btn';
-    if (i === currentPart)      btn.classList.add('active');
-    else if (doneParts.includes(i)) btn.classList.add('done');
-  }
-}
-
-// ═══════════════════════════════════════
-// ВОСПРОИЗВЕСТИ ЧАСТЬ
-//
-// Каждый раз при нажатии на часть:
-// 1. Запрашиваем Apps Script с логином и номером части
-// 2. Apps Script проверяет таблицу ПРЯМО СЕЙЧАС
-// 3. Если доступ есть — возвращает ID Google Vids
-// 4. Открываем Google Vids в НОВОЙ ВКЛАДКЕ
-//    (т.к. Google Vids не поддерживает iframe)
-//
-// Клиент не видит ссылку заранее!
-// ═══════════════════════════════════════
-async function playPart(partNum) {
-  // Блокируем кнопку пока грузим
-  const btn = document.getElementById(`part-btn-${partNum}`);
-  if (btn) btn.classList.add('loading');
-
-  // Скрываем ошибку, показываем загрузку
-  document.getElementById('errorBox').classList.remove('show');
-  document.getElementById('playerPreview').style.display  = 'none';
-  document.getElementById('playerIframe').classList.remove('show');
-  document.getElementById('playerLoading').classList.add('show');
-  document.getElementById('loadingText').textContent = `Загружаем часть ${partNum}...`;
-  document.getElementById('nextBtn').classList.remove('show');
-
-  currentPart = partNum;
-  updateNavButtons();
-
+async function openPart(partNum) {
+  const item    = document.getElementById('item-' + partNum);
+  const spinner = document.getElementById('spin-' + partNum);
+  const errBox  = document.getElementById('err-'  + partNum);
+  const btn     = document.getElementById('btn-'  + partNum);
+  if (item.classList.contains('loading')) return;
+  errBox.classList.remove('show');
+  item.classList.add('loading');
+  spinner.classList.add('show');
+  btn.disabled = true;
   try {
-    const res  = await fetch(
-      `${SCRIPT_URL}?action=getPart` +
-      `&login=${encodeURIComponent(token.userLogin)}` +
-      `&lessonId=${token.lessonId}` +
-      `&part=${partNum}`
-    );
+    const res  = await fetch(SCRIPT_URL + '?action=getPart&login=' + encodeURIComponent(token.userLogin) + '&lessonId=' + token.lessonId + '&part=' + partNum);
     const data = await res.json();
-
-    // Скрываем спиннер
-    document.getElementById('playerLoading').classList.remove('show');
-
+    spinner.classList.remove('show');
+    item.classList.remove('loading');
+    btn.disabled = false;
     if (data.ok && data.videoId) {
-      // ✅ Получили ID Google Vids — открываем в новой вкладке
-      // Google Vids не поддерживает встраивание через iframe
-      // Поэтому открываем ссылку в новой вкладке
-      const vidsUrl = `https://docs.google.com/videos/d/${data.videoId}/edit`;
-      window.open(vidsUrl, '_blank');
-
-      // Показываем превью с подтверждением
-      document.getElementById('playerPreview').style.display  = 'flex';
-      document.getElementById('previewTitle').textContent = `Часть ${partNum} открыта в новой вкладке`;
-
-      // Помечаем как просмотренную
+      window.open('https://docs.google.com/videos/d/' + data.videoId + '/edit', '_blank');
       if (!doneParts.includes(partNum)) doneParts.push(partNum);
-      updateNavButtons();
-
-      // Показываем кнопку следующей части
-      if (partNum < totalParts) {
-        const nb = document.getElementById('nextBtn');
-        nb.textContent = `Следующая часть (${partNum + 1} из ${totalParts}) →`;
-        nb.classList.add('show');
-      }
-
+      markDone(partNum);
     } else if (data.denied) {
-      showError('🚫 Доступ закрыт', 'Администратор закрыл ваш доступ к этому уроку.');
-      document.getElementById('playerPreview').style.display = 'flex';
+      showErr(partNum, '🚫 Доступ закрыт администратором');
     } else {
-      showError('🔒 Ошибка', data.error || 'Не удалось загрузить часть. Попробуйте снова.');
-      document.getElementById('playerPreview').style.display = 'flex';
+      showErr(partNum, data.error || '⚠ Не удалось загрузить. Попробуйте снова.');
     }
-
   } catch(e) {
-    document.getElementById('playerLoading').classList.remove('show');
-    document.getElementById('playerPreview').style.display = 'flex';
-    showError('⚠ Ошибка соединения', 'Проверьте интернет и попробуйте снова.');
-  }
-
-  if (btn) btn.classList.remove('loading');
-}
-
-// ═══════════════════════════════════════
-// КНОПКА "СЛЕДУЮЩАЯ ЧАСТЬ"
-// ═══════════════════════════════════════
-function playNextPart() {
-  if (currentPart < totalParts) {
-    playPart(currentPart + 1);
+    spinner.classList.remove('show');
+    item.classList.remove('loading');
+    btn.disabled = false;
+    showErr(partNum, '⚠ Нет соединения. Проверьте интернет.');
   }
 }
 
-function showError(title, text) {
-  document.getElementById('errTitle').textContent = title;
-  document.getElementById('errText').textContent  = text;
-  document.getElementById('errorBox').classList.add('show');
+function markDone(partNum) {
+  document.getElementById('item-' + partNum).classList.add('done');
+  document.getElementById('btn-'  + partNum).textContent = '✓ Смотреть снова';
+  document.getElementById('tag-'  + partNum).textContent = '✓ Открыто';
+}
+function showErr(partNum, msg) {
+  document.getElementById('errMsg-' + partNum).textContent = msg;
+  document.getElementById('err-'    + partNum).classList.add('show');
+}
+function closeErr(partNum) {
+  document.getElementById('err-' + partNum).classList.remove('show');
 }
 
-// ═══════════════════════════════════════
-// ЭКРАН БЛОКИРОВКИ
-// ═══════════════════════════════════════
 function showBlocked() {
   document.getElementById('blockedScreen').classList.add('show');
   let n = 5;
   const el = document.getElementById('countNum');
-  const t = setInterval(() => {
-    n--; el.textContent = n;
-    if (n <= 0) { clearInterval(t); window.location.href = 'index.html'; }
-  }, 1000);
+  const t = setInterval(() => { n--; el.textContent = n; if (n <= 0) { clearInterval(t); window.location.href = 'index.html'; } }, 1000);
 }
 </script>
 </body>
