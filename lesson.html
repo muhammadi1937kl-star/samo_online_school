@@ -157,15 +157,9 @@
     padding:.5rem 1.2rem;font-family:'Nunito',sans-serif;font-weight:700;
     font-size:.85rem;cursor:pointer;margin-top:.3rem;}
 
-  /* Открыт в новой вкладке — подтверждение */
-  .opened-confirm{
-    width:100%;padding:1.2rem 1.5rem;background:#0d3d23;
-    display:none;align-items:center;gap:.8rem;
-  }
-  .opened-confirm.show{display:flex;}
-  .opened-confirm span{font-size:1.3rem;}
-  .opened-confirm p{color:#2ECC71;font-size:.9rem;font-weight:600;}
-  .opened-confirm small{color:rgba(255,255,255,.4);font-size:.8rem;display:block;}
+  /* Встроенный плеер Google Drive */
+  .drive-player{width:100%;background:#000;}
+  .drive-player iframe{width:100%;aspect-ratio:16/9;border:none;display:block;}
 
   /* Описание урока */
   .desc-block{background:#fff;border:1px solid var(--border);border-radius:16px;
@@ -352,13 +346,9 @@ function buildPartsList() {
           <p>Проверяем доступ и загружаем часть ${i}...</p>
         </div>
 
-        <!-- Подтверждение что открыто в новой вкладке -->
-        <div class="opened-confirm" id="confirm-${i}">
-          <span>✅</span>
-          <div>
-            <p>Часть ${i} открыта в новой вкладке!</p>
-            <small>Вернитесь сюда чтобы перейти к следующей части</small>
-          </div>
+        <!-- Встроенный плеер Google Drive -->
+        <div class="drive-player" id="drivePlayer-${i}" style="display:none;">
+          <iframe id="driveIframe-${i}" src="" allowfullscreen allow="autoplay; encrypted-media" style="width:100%;aspect-ratio:16/9;border:none;display:block;"></iframe>
         </div>
 
         <!-- Ошибка -->
@@ -419,69 +409,68 @@ function closeAllPlayers() {
 
 function hideInnerStates(i) {
   const loading = document.getElementById(`loading-${i}`);
-  const confirm = document.getElementById(`confirm-${i}`);
-  const error   = document.getElementById(`error-${i}`);
-  if (loading) loading.classList.remove('show');
-  if (confirm) confirm.classList.remove('show');
-  if (error)   error.classList.remove('show');
+  const drivePlayer = document.getElementById(`drivePlayer-${i}`);
+  const error        = document.getElementById(`error-${i}`);
+  if (loading)     loading.classList.remove('show');
+  if (drivePlayer) { drivePlayer.style.display = 'none'; document.getElementById(`driveIframe-${i}`).src = ''; }
+  if (error)       error.classList.remove('show');
 }
 
 // ═══════════════════════════════════════════════════════
-// ЗАПУСТИТЬ ЧАСТЬ — нажали кнопку ▶
-//
-// 1. Открываем аккордеон этой части
-// 2. Показываем спиннер
-// 3. Запрашиваем Apps Script — проверка доступа
-// 4. Apps Script возвращает ID Google Vids
-// 5. Открываем Google Vids в НОВОЙ ВКЛАДКЕ
-// 6. Показываем подтверждение в аккордеоне
-// ═══════════════════════════════════════════════════════
-async function startPart(partNum, btn) {
-  // Открываем аккордеон
-  closeAllPlayers();
-  openPlayer(partNum);
+  // ЗАПУСТИТЬ ЧАСТЬ — нажали кнопку ▶
+  //
+  // 1. Открываем аккордеон этой части
+  // 2. Показываем спиннер
+  // 3. Запрашиваем Apps Script — проверка доступа
+  // 4. Apps Script возвращает ID файла на Google Диске
+  // 5. Встраиваем видео прямо на странице через iframe
+  // ═══════════════════════════════════════════════════════
+  async function startPart(partNum, btn) {
+    // Открываем аккордеон
+    closeAllPlayers();
+    openPlayer(partNum);
 
-  // Блокируем кнопку, показываем спиннер
-  btn.disabled = true;
-  btn.innerHTML = '<div class="btn-spinner"></div>';
+    // Блокируем кнопку, показываем спиннер
+    btn.disabled = true;
+    btn.innerHTML = '<div class="btn-spinner"></div>';
 
-  // Показываем загрузку внутри плеера
-  document.getElementById(`loading-${partNum}`).classList.add('show');
-  document.getElementById(`confirm-${partNum}`).classList.remove('show');
-  document.getElementById(`error-${partNum}`).classList.remove('show');
+    // Показываем загрузку внутри плеера
+    document.getElementById(`loading-${partNum}`).classList.add('show');
+    const dpEl = document.getElementById(`drivePlayer-${partNum}`);
+    if (dpEl) dpEl.style.display = 'none';
+    document.getElementById(`error-${partNum}`).classList.remove('show');
 
-  try {
-    const res  = await fetch(
-      `${SCRIPT_URL}?action=getPart` +
-      `&login=${encodeURIComponent(token.userLogin)}` +
-      `&lessonId=${token.lessonId}` +
-      `&part=${partNum}`
-    );
-    const data = await res.json();
+    try {
+      const res  = await fetch(
+        `${SCRIPT_URL}?action=getPart` +
+        `&login=${encodeURIComponent(token.userLogin)}` +
+        `&lessonId=${token.lessonId}` +
+        `&part=${partNum}`
+      );
+      const data = await res.json();
 
-    document.getElementById(`loading-${partNum}`).classList.remove('show');
+      document.getElementById(`loading-${partNum}`).classList.remove('show');
 
-    if (data.ok && data.videoId) {
-      // ✅ Открываем Google Vids в новой вкладке
-      const url = `https://docs.google.com/videos/d/${data.videoId}/edit`;
-      window.open(url, '_blank');
+      if (data.ok && data.videoId) {
+        // ✅ Встраиваем видео с Google Диска прямо на страницу
+        const embedUrl = `https://drive.google.com/file/d/${data.videoId}/preview`;
+        const iframeEl = document.getElementById(`driveIframe-${partNum}`);
+        iframeEl.src = embedUrl;
+        dpEl.style.display = 'block';
 
-      // Показываем подтверждение
-      document.getElementById(`confirm-${partNum}`).classList.add('show');
+        // Помечаем как просмотренную
+        watchedParts.add(partNum);
+        markWatched(partNum);
+        updateProgress();
 
-      // Помечаем как просмотренную
-      watchedParts.add(partNum);
-      markWatched(partNum);
-      updateProgress();
+        // Обновляем подпись
+        document.getElementById(`sub-${partNum}`).textContent = '▶ Воспроизводится — нажмите снова для повтора';
 
-      // Обновляем подпись
-      document.getElementById(`sub-${partNum}`).textContent = '✓ Просмотрено — нажмите снова для повтора';
-
-    } else if (data.denied) {
-      showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
-    } else {
-      showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
-    }
+      } else if (data.denied) {
+        showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
+      } else {
+        showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
+      }
 
   } catch(e) {
     document.getElementById(`loading-${partNum}`).classList.remove('show');
