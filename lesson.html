@@ -254,7 +254,7 @@
 // ═══════════════════════════════════════════════════════
 // КОНФИГ — тот же URL что в index.html
 // ═══════════════════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8Y0dl9PpQOBx1snvw9gMzX_SUHEKWO1o24M6b8L9uEobc2Nr_580aG7BOnX5xDXY/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzsTyV7GUad0xJhCXCJ7Z1Oyy_Q-Zch-S8nqjjA7Ovfsqn3HPomEoydt_e52ZeGzJHy/exec';
 
 let token      = null;
 let totalParts = 0;
@@ -271,7 +271,7 @@ window.addEventListener('load', () => {
   try { token = JSON.parse(raw); }
   catch(e) { showBlocked(); return; }
 
-  if (!token.ts || Date.now() - token.ts > 10 * 60 * 1000) {
+  if (!token.ts || Date.now() - token.ts > 8 * 60 * 60 * 1000) {
     sessionStorage.removeItem('lesson_token');
     showBlocked(); return;
   }
@@ -280,7 +280,7 @@ window.addEventListener('load', () => {
     showBlocked(); return;
   }
 
-  sessionStorage.removeItem('lesson_token');
+  // НЕ удаляем токен — чтобы страницу можно было обновлять
   totalParts = token.partsCount || 1;
   showLesson();
 });
