@@ -166,19 +166,18 @@
 
 <footer>© 2026 Давлатов Академия · Все права защищены</footer>
 
-<!-- ЛОГИН -->
+<!-- ЛОГИН через Google -->
 <div class="overlay" id="loginModal">
   <div class="modal">
     <button class="mclose" onclick="closeModal('loginModal')">✕</button>
-    <div class="micon">🔑</div>
+    <div class="micon">🎓</div>
     <h2>Вход в аккаунт</h2>
-    <p class="msub">Введите логин и пароль, которые выдал администратор.</p>
+    <p class="msub">Войдите через Google-аккаунт. Доступ к урокам выдаёт администратор.</p>
     <div id="loginErr"></div>
-    <div class="field"><label>Логин</label>
-      <input type="text" id="iLogin" placeholder="your_login" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <div class="field"><label>Пароль</label>
-      <input type="password" id="iPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"></div>
-    <button class="sbtn" id="loginBtn2" onclick="doLogin()">Войти</button>
+    <button class="sbtn" id="googleSignInBtn" onclick="signInWithGoogle()" style="display:flex;align-items:center;justify-content:center;gap:.7rem;background:#fff;color:#3c4043;border:1.5px solid #dadce0;box-shadow:0 1px 4px rgba(0,0,0,.12);">
+      <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v8.51h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.14z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.5-1.45-.79-3-.79-4.59s.29-3.14.79-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/></svg>
+      Войти через Google
+    </button>
   </div>
 </div>
 
@@ -193,11 +192,16 @@
   </div>
 </div>
 
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
 // ═══════════════════════════════════════════
-// КОНФИГ — вставь URL своего Apps Script
+// КОНФИГ
 // ═══════════════════════════════════════════
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx8Y0dl9PpQOBx1snvw9gMzX_SUHEKWO1o24M6b8L9uEobc2Nr_580aG7BOnX5xDXY/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzsTyV7GUad0xJhCXCJ7Z1Oyy_Q-Zch-S8nqjjA7Ovfsqn3HPomEoydt_e52ZeGzJHy/exec';
+
+// ⚠️ ЗАМЕНИТЕ на ваш Google OAuth Client ID
+// Получить: https://console.cloud.google.com → APIs & Services → Credentials → Create OAuth 2.0 Client ID (Web application)
+const GOOGLE_CLIENT_ID = '256108679696-695niih35d5v6psfa9j8ls22cgpapjqk.apps.googleusercontent.com';
 
 // ═══════════════════════════════════════════
 // УРОКИ
@@ -216,40 +220,94 @@ const LESSONS = [
   {id:8,title:'Масштабирование бизнеса',desc:'От малого бизнеса к системе. Делегирование и автоматизация.',emoji:'🚀',img:'9999.png',parts:5},
 ];
 
-let user = null;
+// ═══════════════════════════════════════════
+// GOOGLE OAUTH
+// ═══════════════════════════════════════════
+let googleTokenClient = null;
 
-window.addEventListener('load',()=>{
-  const s=sessionStorage.getItem('u');
-  if(s){user=JSON.parse(s);refreshUI();}
+window.addEventListener('load', () => {
+  const s = sessionStorage.getItem('u');
+  if (s) { user = JSON.parse(s); refreshUI(); }
   renderLessons();
 });
 
-async function doLogin(){
-  const login=document.getElementById('iLogin').value.trim();
-  const pass=document.getElementById('iPass').value;
-  if(!login||!pass){showErr('Введите логин и пароль.');return;}
-  const btn=document.getElementById('loginBtn2');
-  btn.disabled=true;btn.textContent='Проверяем...';hideErr();
-  try{
-    const res=await fetch(`${SCRIPT_URL}?action=login&login=${encodeURIComponent(login)}&pass=${encodeURIComponent(pass)}`);
-    const data=await res.json();
-    if(data.ok){
-      user={login:data.login,name:data.name,lessons:data.lessons||[]};
-      sessionStorage.setItem('u',JSON.stringify(user));
-      document.getElementById('iPass').value='';
-      closeModal('loginModal');refreshUI();renderLessons();
-    }else if(data.denied){showErr('Ваш доступ заблокирован.');
-    }else{showErr('Неверный логин или пароль.');}
-  }catch(e){showErr('Ошибка соединения.');}
-  btn.disabled=false;btn.textContent='Войти';
+// Инициализация Google Identity Services
+function initGoogleAuth() {
+  if (typeof google === 'undefined') {
+    setTimeout(initGoogleAuth, 300);
+    return;
+  }
+  googleTokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'openid email profile',
+    callback: handleGoogleToken,
+  });
+}
+initGoogleAuth();
+
+function signInWithGoogle() {
+  if (!googleTokenClient) {
+    showErr('Google ещё загружается. Попробуйте через секунду.');
+    return;
+  }
+  googleTokenClient.requestAccessToken();
 }
 
-function showErr(m){const e=document.getElementById('loginErr');e.textContent='⚠ '+m;e.style.display='block';}
-function hideErr(){document.getElementById('loginErr').style.display='none';}
+async function handleGoogleToken(tokenResponse) {
+  if (tokenResponse.error) {
+    showErr('Ошибка Google: ' + tokenResponse.error);
+    return;
+  }
+  const btn = document.getElementById('googleSignInBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="btn-spinner" style="border-top-color:#B8860B;border-color:rgba(184,134,11,.3);"></div> Проверяем...';
+  hideErr();
 
-function signOut(){
-  user=null;sessionStorage.removeItem('u');sessionStorage.removeItem('lesson_token');
-  refreshUI();renderLessons();
+  try {
+    // Получаем email пользователя от Google
+    const profileRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenResponse.access_token}` }
+    });
+    const profile = await profileRes.json();
+    const email = profile.email;
+    const name  = profile.name || email;
+
+    // Проверяем доступ в Apps Script по email
+    const res  = await fetch(`${SCRIPT_URL}?action=loginGoogle&email=${encodeURIComponent(email)}`);
+    const data = await res.json();
+
+    if (data.ok) {
+      user = { login: email, name: name, lessons: data.lessons || [] };
+      sessionStorage.setItem('u', JSON.stringify(user));
+      closeModal('loginModal');
+      refreshUI();
+      renderLessons();
+    } else if (data.denied) {
+      showErr('Ваш доступ заблокирован администратором.');
+    } else {
+      showErr('Этот Google-аккаунт не зарегистрирован. Обратитесь к администратору.');
+    }
+  } catch(e) {
+    showErr('Ошибка соединения. Попробуйте снова.');
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v8.51h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.14z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="#FBBC05" d="M10.53 28.59c-.5-1.45-.79-3-.79-4.59s.29-3.14.79-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/></svg> Войти через Google';
+}
+
+function showErr(m) { const e = document.getElementById('loginErr'); e.textContent = '⚠ ' + m; e.style.display = 'block'; }
+function hideErr()  { document.getElementById('loginErr').style.display = 'none'; }
+
+function signOut() {
+  // Отзываем Google токен
+  if (typeof google !== 'undefined' && user) {
+    google.accounts.oauth2.revoke(user.login, () => {});
+  }
+  user = null;
+  sessionStorage.removeItem('u');
+  sessionStorage.removeItem('lesson_token');
+  refreshUI();
+  renderLessons();
 }
 
 function refreshUI(){
