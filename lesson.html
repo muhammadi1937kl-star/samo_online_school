@@ -59,7 +59,7 @@
   .progress-label{font-size:.8rem;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
 
   /* ═══ СПИСОК ЧАСТЕЙ ═══ */
-  .parts-list{display:flex;flex-direction:column;gap:.8rem;}
+  .parts-list{display:flex;flex-direction:column;gap:1.5rem;}
 
   /* Карточка части */
   .part-card{
@@ -67,99 +67,84 @@
     border-radius:16px;overflow:hidden;
     box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s;
   }
-  .part-card.active{border-color:var(--gold);box-shadow:var(--sh-h);}
-  .part-card.watched .part-header{background:var(--green-bg);}
+  .part-card.watched{border-color:rgba(5,150,105,.3);}
 
-  /* Заголовок части — кликабельный */
+  /* Заголовок части */
   .part-header{
-    display:flex;align-items:center;gap:1rem;
-    padding:1rem 1.2rem;cursor:pointer;
-    transition:background .2s;user-select:none;
+    display:flex;align-items:center;gap:.8rem;
+    padding:.85rem 1.2rem;
   }
-  .part-header:hover{background:#FAFAFA;}
-  .part-card.active .part-header{background:var(--gold-bg);}
-
-  /* Номер части */
   .part-num{
-    width:40px;height:40px;border-radius:50%;flex-shrink:0;
+    width:34px;height:34px;border-radius:50%;flex-shrink:0;
     background:var(--gold-bg);border:2px solid rgba(184,134,11,.3);
-    color:var(--gold);font-weight:800;font-size:.9rem;
+    color:var(--gold);font-weight:800;font-size:.85rem;
     display:flex;align-items:center;justify-content:center;
-    transition:all .2s;
   }
-  .part-card.active .part-num{background:var(--gold);color:#fff;border-color:var(--gold);}
   .part-card.watched .part-num{background:var(--green-bg);border-color:rgba(5,150,105,.3);color:var(--green);}
-
   .part-info{flex:1;}
-  .part-title{font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:.15rem;}
-  .part-sub{font-size:.8rem;color:var(--muted);}
-
-  /* Кнопка play / статус */
+  .part-title{font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:.1rem;}
+  .part-sub{font-size:.78rem;color:var(--muted);}
   .part-action{flex-shrink:0;}
-  .play-btn{
-    width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;
-    background:var(--gold);color:#fff;
-    display:flex;align-items:center;justify-content:center;
-    transition:all .2s;box-shadow:0 2px 10px rgba(184,134,11,.4);
-  }
-  .play-btn:hover{background:var(--gold-l);transform:scale(1.08);}
-  .play-btn:disabled{opacity:.6;cursor:wait;transform:none;}
-  .play-btn svg{width:18px;height:18px;margin-left:2px;}
 
-  /* Спиннер в кнопке */
-  .btn-spinner{width:18px;height:18px;border-radius:50%;
-    border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+  /* Видео-блок — всегда виден */
+  .video-wrap{
+    position:relative;width:100%;aspect-ratio:16/9;
+    background:#111;overflow:hidden;
+  }
+  .video-wrap iframe{
+    position:absolute;inset:0;width:100%;height:100%;
+    border:none;display:block;
+  }
+
+  /* Оверлей с кнопкой Play */
+  .video-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(135deg,#0d0d1a 0%,#1a1228 100%);
+    display:flex;align-items:center;justify-content:center;
+    flex-direction:column;gap:1rem;
+    transition:opacity .3s;cursor:pointer;
+  }
+  .video-overlay.hidden{opacity:0;pointer-events:none;}
+
+  .big-play-btn{
+    width:72px;height:72px;border-radius:50%;border:none;
+    background:var(--gold);color:#fff;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 4px 24px rgba(184,134,11,.6);
+    transition:transform .2s,box-shadow .2s;
+  }
+  .big-play-btn:hover{transform:scale(1.1);box-shadow:0 6px 32px rgba(184,134,11,.8);}
+  .big-play-btn:disabled{opacity:.6;cursor:wait;}
+  .big-play-btn svg{width:30px;height:30px;margin-left:4px;}
+
+  /* Спиннер */
+  .btn-spinner{width:28px;height:28px;border-radius:50%;
+    border:3px solid rgba(255,255,255,.3);border-top-color:#fff;
     animation:spin .7s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
-
-  /* Значок просмотрено */
-  .watched-icon{width:44px;height:44px;border-radius:50%;
-    background:var(--green-bg);border:2px solid rgba(5,150,105,.3);
-    color:var(--green);display:flex;align-items:center;justify-content:center;
-    font-size:1.1rem;}
-
-  /* ═══ РАЗВЁРТЫВАЕМЫЙ ПЛЕЕР ═══ */
-  .part-player{
-    max-height:0;overflow:hidden;
-    transition:max-height .35s ease;
-    background:#000;
-  }
-  .part-player.open{max-height:600px;}
-
-  /* iframe */
-  .part-player iframe{
-    width:100%;aspect-ratio:16/9;border:none;display:block;
-  }
-
-  /* Состояние загрузки внутри плеера */
-  .player-loading-inner{
-    width:100%;aspect-ratio:16/9;
-    background:#111;display:none;
-    align-items:center;justify-content:center;flex-direction:column;gap:1rem;
-  }
-  .player-loading-inner.show{display:flex;}
   .big-spinner{width:44px;height:44px;border-radius:50%;
     border:3px solid rgba(184,134,11,.25);border-top-color:var(--gold);
     animation:spin .8s linear infinite;}
-  .player-loading-inner p{color:rgba(255,255,255,.5);font-size:.88rem;}
 
-  /* Ошибка внутри плеера */
-  .player-error-inner{
-    width:100%;aspect-ratio:16/9;background:#1a0a0a;
+  /* Ошибка поверх видео */
+  .video-error{
+    position:absolute;inset:0;background:#1a0a0a;
     display:none;align-items:center;justify-content:center;
-    flex-direction:column;gap:.8rem;text-align:center;padding:2rem;
+    flex-direction:column;gap:.7rem;text-align:center;padding:2rem;
   }
-  .player-error-inner.show{display:flex;}
-  .player-error-inner span{font-size:2.5rem;}
-  .player-error-inner h4{color:#ff7b6b;font-size:1rem;}
-  .player-error-inner p{color:rgba(255,255,255,.45);font-size:.85rem;}
+  .video-error.show{display:flex;}
+  .video-error span{font-size:2.5rem;}
+  .video-error h4{color:#ff7b6b;font-size:1rem;}
+  .video-error p{color:rgba(255,255,255,.45);font-size:.85rem;}
   .retry-btn{background:var(--gold);color:#fff;border:none;border-radius:8px;
     padding:.5rem 1.2rem;font-family:'Nunito',sans-serif;font-weight:700;
     font-size:.85rem;cursor:pointer;margin-top:.3rem;}
 
-  /* Встроенный плеер Google Drive */
-  .drive-player{width:100%;background:#000;}
-  .drive-player iframe{width:100%;aspect-ratio:16/9;border:none;display:block;}
+  /* Значок просмотрено в шапке части */
+  .watched-badge{display:none;background:var(--green-bg);border:1.5px solid rgba(5,150,105,.3);
+    color:var(--green);border-radius:20px;font-size:.75rem;font-weight:700;
+    padding:.2rem .7rem;}
+  .part-card.watched .watched-badge{display:inline-block;}
 
   /* Описание урока */
   .desc-block{background:#fff;border:1px solid var(--border);border-radius:16px;
@@ -259,7 +244,6 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzsTyV7GUad0xJhCXCJ7
 let token      = null;
 let totalParts = 0;
 let watchedParts = new Set(); // просмотренные части
-let currentOpenPart = 0;      // сейчас открытая часть (0 = нет)
 
 // ═══════════════════════════════════════════════════════
 // ЗАГРУЗКА — проверяем токен
@@ -319,46 +303,34 @@ function buildPartsList() {
     card.id = `card-${i}`;
 
     card.innerHTML = `
-      <!-- ЗАГОЛОВОК ЧАСТИ -->
-      <div class="part-header" onclick="togglePart(${i})">
+      <div class="part-header">
         <div class="part-num" id="num-${i}">${i}</div>
         <div class="part-info">
           <div class="part-title">Часть ${i}</div>
           <div class="part-sub" id="sub-${i}">Нажмите ▶ для просмотра</div>
         </div>
-        <div class="part-action" id="action-${i}">
-          <button class="play-btn" id="playbtn-${i}"
-            onclick="event.stopPropagation(); startPart(${i}, this)"
-            title="Смотреть часть ${i}">
+        <span class="watched-badge">✓ Просмотрено</span>
+      </div>
+
+      <div class="video-wrap" id="vwrap-${i}">
+        <iframe id="driveIframe-${i}" src="" allowfullscreen
+          allow="autoplay; encrypted-media; fullscreen"
+          style="display:none;"></iframe>
+
+        <div class="video-overlay" id="overlay-${i}" onclick="startPart(${i})">
+          <button class="big-play-btn" id="playbtn-${i}">
             <svg viewBox="0 0 24 24" fill="white">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
           </button>
         </div>
-      </div>
 
-      <!-- ПЛЕЕР (раскрывается при нажатии) -->
-      <div class="part-player" id="player-${i}">
-
-        <!-- Спиннер загрузки -->
-        <div class="player-loading-inner" id="loading-${i}">
-          <div class="big-spinner"></div>
-          <p>Проверяем доступ и загружаем часть ${i}...</p>
-        </div>
-
-        <!-- Встроенный плеер Google Drive -->
-        <div class="drive-player" id="drivePlayer-${i}" style="display:none;">
-          <iframe id="driveIframe-${i}" src="" allowfullscreen allow="autoplay; encrypted-media" style="width:100%;aspect-ratio:16/9;border:none;display:block;"></iframe>
-        </div>
-
-        <!-- Ошибка -->
-        <div class="player-error-inner" id="error-${i}">
+        <div class="video-error" id="error-${i}">
           <span>🚫</span>
           <h4 id="errTitle-${i}">Ошибка</h4>
           <p id="errText-${i}">Попробуйте снова</p>
-          <button class="retry-btn" onclick="startPart(${i}, document.getElementById('playbtn-${i}'))">Попробовать снова</button>
+          <button class="retry-btn" onclick="startPart(${i})">Попробовать снова</button>
         </div>
-
       </div>`;
 
     list.appendChild(card);
@@ -366,120 +338,58 @@ function buildPartsList() {
 }
 
 // ═══════════════════════════════════════════════════════
-// ОТКРЫТЬ / ЗАКРЫТЬ ЧАСТЬ (аккордеон)
+// ЗАПУСТИТЬ ЧАСТЬ — нажали большую кнопку ▶
 // ═══════════════════════════════════════════════════════
-function togglePart(partNum) {
-  const player = document.getElementById(`player-${partNum}`);
-  const isOpen = player.classList.contains('open');
+async function startPart(partNum) {
+  const btn     = document.getElementById(`playbtn-${partNum}`);
+  const overlay = document.getElementById(`overlay-${partNum}`);
+  const errEl   = document.getElementById(`error-${partNum}`);
+  const iframe  = document.getElementById(`driveIframe-${partNum}`);
 
-  // Закрываем все открытые
-  closeAllPlayers();
+  btn.disabled = true;
+  btn.innerHTML = '<div class="btn-spinner"></div>';
+  errEl.classList.remove('show');
 
-  if (!isOpen) {
-    // Открываем эту
-    openPlayer(partNum);
-  }
-}
+  try {
+    const res  = await fetch(
+      `${SCRIPT_URL}?action=getPart` +
+      `&login=${encodeURIComponent(token.userLogin)}` +
+      `&lessonId=${token.lessonId}` +
+      `&part=${partNum}`
+    );
+    const data = await res.json();
 
-function openPlayer(partNum) {
-  const card   = document.getElementById(`card-${partNum}`);
-  const player = document.getElementById(`player-${partNum}`);
-  card.classList.add('active');
-  player.classList.add('open');
-  currentOpenPart = partNum;
+    if (data.ok && data.videoId) {
+      const embedUrl = `https://drive.google.com/file/d/${data.videoId}/preview?autoplay=1`;
+      iframe.src = embedUrl;
+      iframe.style.display = 'block';
+      overlay.classList.add('hidden');
 
-  // Прокручиваем к карточке
-  setTimeout(() => {
-    card.scrollIntoView({ behavior:'smooth', block:'nearest' });
-  }, 100);
-}
+      watchedParts.add(partNum);
+      markWatched(partNum);
+      updateProgress();
+      document.getElementById(`sub-${partNum}`).textContent = '▶ Воспроизводится';
 
-function closeAllPlayers() {
-  for (let i = 1; i <= totalParts; i++) {
-    const card   = document.getElementById(`card-${i}`);
-    const player = document.getElementById(`player-${i}`);
-    if (card)   card.classList.remove('active');
-    if (player) player.classList.remove('open');
-
-    // Скрываем все внутренние состояния
-    hideInnerStates(i);
-  }
-  currentOpenPart = 0;
-}
-
-function hideInnerStates(i) {
-  const loading = document.getElementById(`loading-${i}`);
-  const drivePlayer = document.getElementById(`drivePlayer-${i}`);
-  const error        = document.getElementById(`error-${i}`);
-  if (loading)     loading.classList.remove('show');
-  if (drivePlayer) { drivePlayer.style.display = 'none'; document.getElementById(`driveIframe-${i}`).src = ''; }
-  if (error)       error.classList.remove('show');
-}
-
-// ═══════════════════════════════════════════════════════
-  // ЗАПУСТИТЬ ЧАСТЬ — нажали кнопку ▶
-  //
-  // 1. Открываем аккордеон этой части
-  // 2. Показываем спиннер
-  // 3. Запрашиваем Apps Script — проверка доступа
-  // 4. Apps Script возвращает ID файла на Google Диске
-  // 5. Встраиваем видео прямо на странице через iframe
-  // ═══════════════════════════════════════════════════════
-  async function startPart(partNum, btn) {
-    // Открываем аккордеон
-    closeAllPlayers();
-    openPlayer(partNum);
-
-    // Блокируем кнопку, показываем спиннер
-    btn.disabled = true;
-    btn.innerHTML = '<div class="btn-spinner"></div>';
-
-    // Показываем загрузку внутри плеера
-    document.getElementById(`loading-${partNum}`).classList.add('show');
-    const dpEl = document.getElementById(`drivePlayer-${partNum}`);
-    if (dpEl) dpEl.style.display = 'none';
-    document.getElementById(`error-${partNum}`).classList.remove('show');
-
-    try {
-      const res  = await fetch(
-        `${SCRIPT_URL}?action=getPart` +
-        `&login=${encodeURIComponent(token.userLogin)}` +
-        `&lessonId=${token.lessonId}` +
-        `&part=${partNum}`
-      );
-      const data = await res.json();
-
-      document.getElementById(`loading-${partNum}`).classList.remove('show');
-
-      if (data.ok && data.videoId) {
-        // ✅ Встраиваем видео с Google Диска прямо на страницу
-        const embedUrl = `https://drive.google.com/file/d/${data.videoId}/preview`;
-        const iframeEl = document.getElementById(`driveIframe-${partNum}`);
-        iframeEl.src = embedUrl;
-        dpEl.style.display = 'block';
-
-        // Помечаем как просмотренную
-        watchedParts.add(partNum);
-        markWatched(partNum);
-        updateProgress();
-
-        // Обновляем подпись
-        document.getElementById(`sub-${partNum}`).textContent = '▶ Воспроизводится — нажмите снова для повтора';
-
-      } else if (data.denied) {
-        showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
-      } else {
-        showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
-      }
+    } else if (data.denied) {
+      showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
+      resetPlayBtn(partNum);
+    } else {
+      showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
+      resetPlayBtn(partNum);
+    }
 
   } catch(e) {
-    document.getElementById(`loading-${partNum}`).classList.remove('show');
     showPartError(partNum, '⚠ Нет соединения', 'Проверьте интернет и попробуйте снова.');
+    resetPlayBtn(partNum);
   }
+}
 
-  // Восстанавливаем кнопку
-  btn.disabled = false;
-  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+function resetPlayBtn(partNum) {
+  const btn = document.getElementById(`playbtn-${partNum}`);
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+  }
 }
 
 function showPartError(partNum, title, text) {
@@ -492,21 +402,10 @@ function showPartError(partNum, title, text) {
 // ПОМЕТИТЬ ЧАСТЬ КАК ПРОСМОТРЕННУЮ
 // ═══════════════════════════════════════════════════════
 function markWatched(partNum) {
-  const card   = document.getElementById(`card-${partNum}`);
-  const numEl  = document.getElementById(`num-${partNum}`);
-  const action = document.getElementById(`action-${partNum}`);
-
-  if (card)   card.classList.add('watched');
-  if (numEl)  numEl.textContent = '✓';
-  // Кнопка play остаётся — можно смотреть повторно
-  if (action) {
-    action.innerHTML = '<div style="display:flex;align-items:center;gap:.4rem;">' +
-      '<div class="watched-icon" style="width:28px;height:28px;font-size:.8rem;">✓</div>' +
-      '<button class="play-btn" id="playbtn-' + partNum + '" ' +
-      'onclick="event.stopPropagation();startPart(' + partNum + ',this)" title="Смотреть снова">' +
-      '<svg viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>' +
-      '</button></div>';
-  }
+  const card  = document.getElementById(`card-${partNum}`);
+  const numEl = document.getElementById(`num-${partNum}`);
+  if (card)  card.classList.add('watched');
+  if (numEl) numEl.textContent = '✓';
 }
 
 // ═══════════════════════════════════════════════════════
