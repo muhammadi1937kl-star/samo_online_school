@@ -86,25 +86,69 @@
   .part-sub{font-size:.78rem;color:var(--muted);}
   .part-action{flex-shrink:0;}
 
-  /* Видео-блок — всегда виден */
+  /* Видео-блок — превью с кнопкой Play */
   .video-wrap{
-    position:relative;width:100%;aspect-ratio:16/9;
-    background:#111;overflow:hidden;
+    position:relative;width:100%;
+    padding-bottom:56.25%; /* 16:9 */
+    background:linear-gradient(135deg,#0d0d1a 0%,#1a1228 100%);
+    border-radius:0 0 14px 14px;
+    overflow:hidden;
+    cursor:pointer;
   }
-  .video-wrap iframe{
-    position:absolute;inset:0;width:100%;height:100%;
-    border:none;display:block;
+  .video-wrap.watched-bg{
+    background:linear-gradient(135deg,#0a1a12 0%,#0d1f16 100%);
   }
 
-  /* Оверлей с кнопкой Play */
+  /* Оверлей с кнопкой Play — занимает весь блок */
   .video-overlay{
     position:absolute;inset:0;
-    background:linear-gradient(135deg,#0d0d1a 0%,#1a1228 100%);
     display:flex;align-items:center;justify-content:center;
     flex-direction:column;gap:1rem;
-    transition:opacity .3s;cursor:pointer;
   }
-  .video-overlay.hidden{opacity:0;pointer-events:none;}
+
+  /* ══ FULLSCREEN МОДАЛКА ДЛЯ ВИДЕО ══ */
+  #videoModal{
+    display:none;
+    position:fixed;inset:0;z-index:9999;
+    background:#000;
+    flex-direction:column;
+    align-items:stretch;
+  }
+  #videoModal.open{display:flex;}
+
+  /* Шапка модалки */
+  #videoModal .vm-close{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:.7rem 1rem;
+    padding-top:calc(.7rem + env(safe-area-inset-top, 0px));
+    background:rgba(0,0,0,.85);
+    z-index:10;flex-shrink:0;
+    min-height:52px;
+  }
+  #videoModal .vm-title{
+    color:#fff;font-size:.88rem;font-weight:700;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:75%;
+  }
+  #videoModal .vm-close-btn{
+    background:rgba(255,255,255,.18);border:none;color:#fff;
+    width:38px;height:38px;border-radius:50%;font-size:1.1rem;
+    cursor:pointer;display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;transition:background .2s;
+  }
+  #videoModal .vm-close-btn:hover{background:rgba(255,255,255,.3);}
+
+  /* Обёртка iframe — занимает всё оставшееся место */
+  #videoModal .vm-frame-wrap{
+    flex:1;position:relative;
+    display:flex;align-items:center;justify-content:center;
+    background:#000;
+    padding-bottom:env(safe-area-inset-bottom, 0px);
+  }
+  #videoModal iframe{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    border:none;display:block;
+  }
 
   .big-play-btn{
     width:72px;height:72px;border-radius:50%;border:none;
@@ -235,6 +279,19 @@
 
 <footer>© 2025 Давлатов Академия · Все права защищены</footer>
 
+<!-- FULLSCREEN ВИДЕО МОДАЛКА -->
+<div id="videoModal">
+  <div class="vm-close">
+    <span class="vm-title" id="vmTitle"></span>
+    <button class="vm-close-btn" onclick="closeVideoModal()">✕</button>
+  </div>
+  <div class="vm-frame-wrap">
+    <iframe id="vmIframe" src="" allowfullscreen
+      allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+      referrerpolicy="no-referrer"></iframe>
+  </div>
+</div>
+
 <script>
 // ═══════════════════════════════════════════════════════
 // КОНФИГ — тот же URL что в index.html
@@ -312,24 +369,22 @@ function buildPartsList() {
         <span class="watched-badge">✓ Просмотрено</span>
       </div>
 
-      <div class="video-wrap" id="vwrap-${i}">
-        <iframe id="driveIframe-${i}" src="" allowfullscreen
-          allow="autoplay; encrypted-media; fullscreen"
-          style="display:none;"></iframe>
-
-        <div class="video-overlay" id="overlay-${i}" onclick="startPart(${i})">
+      <!-- Превью с большой кнопкой Play — при нажатии открывается fullscreen -->
+      <div class="video-wrap" id="vwrap-${i}" onclick="startPart(${i})">
+        <div class="video-overlay" id="overlay-${i}">
           <button class="big-play-btn" id="playbtn-${i}">
             <svg viewBox="0 0 24 24" fill="white">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
           </button>
+          <span style="color:rgba(255,255,255,.6);font-size:.8rem;">Нажмите для просмотра</span>
         </div>
 
-        <div class="video-error" id="error-${i}">
+        <div class="video-error" id="error-${i}" onclick="event.stopPropagation()">
           <span>🚫</span>
           <h4 id="errTitle-${i}">Ошибка</h4>
           <p id="errText-${i}">Попробуйте снова</p>
-          <button class="retry-btn" onclick="startPart(${i})">Попробовать снова</button>
+          <button class="retry-btn" onclick="event.stopPropagation();startPart(${i})">Попробовать снова</button>
         </div>
       </div>`;
 
@@ -338,17 +393,18 @@ function buildPartsList() {
 }
 
 // ═══════════════════════════════════════════════════════
-// ЗАПУСТИТЬ ЧАСТЬ — нажали большую кнопку ▶
+// ЗАПУСТИТЬ ЧАСТЬ — открываем fullscreen видео
 // ═══════════════════════════════════════════════════════
 async function startPart(partNum) {
   const btn     = document.getElementById(`playbtn-${partNum}`);
-  const overlay = document.getElementById(`overlay-${partNum}`);
   const errEl   = document.getElementById(`error-${partNum}`);
-  const iframe  = document.getElementById(`driveIframe-${partNum}`);
 
-  btn.disabled = true;
-  btn.innerHTML = '<div class="btn-spinner"></div>';
-  errEl.classList.remove('show');
+  // Показываем спиннер на кнопке
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="btn-spinner"></div>';
+  }
+  if (errEl) errEl.classList.remove('show');
 
   try {
     const res  = await fetch(
@@ -360,15 +416,14 @@ async function startPart(partNum) {
     const data = await res.json();
 
     if (data.ok && data.videoId) {
-      const embedUrl = `https://drive.google.com/file/d/${data.videoId}/preview?autoplay=1`;
-      iframe.src = embedUrl;
-      iframe.style.display = 'block';
-      overlay.classList.add('hidden');
+      // ✅ Открываем fullscreen модалку с видео
+      openVideoModal(partNum, data.videoId);
 
+      // Отмечаем просмотрено
       watchedParts.add(partNum);
       markWatched(partNum);
       updateProgress();
-      document.getElementById(`sub-${partNum}`).textContent = '▶ Воспроизводится';
+      document.getElementById(`sub-${partNum}`).textContent = '✓ Воспроизводится';
 
     } else if (data.denied) {
       showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
@@ -383,6 +438,66 @@ async function startPart(partNum) {
     resetPlayBtn(partNum);
   }
 }
+
+// ═══════════════════════════════════════════════════════
+// ОТКРЫТЬ FULLSCREEN МОДАЛКУ С ВИДЕО
+// ═══════════════════════════════════════════════════════
+function openVideoModal(partNum, videoId) {
+  const modal   = document.getElementById('videoModal');
+  const iframe  = document.getElementById('vmIframe');
+  const title   = document.getElementById('vmTitle');
+
+  // Заголовок
+  title.textContent = `${token.title} — Часть ${partNum}`;
+
+  // Устанавливаем src с autoplay
+  iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
+
+  // Показываем модалку
+  modal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  // Запрашиваем полный экран на мобильном
+  if (modal.requestFullscreen) {
+    modal.requestFullscreen().catch(() => {});
+  } else if (modal.webkitRequestFullscreen) {
+    modal.webkitRequestFullscreen();
+  }
+}
+
+function closeVideoModal() {
+  const modal  = document.getElementById('videoModal');
+  const iframe = document.getElementById('vmIframe');
+
+  // Останавливаем видео
+  iframe.src = '';
+
+  modal.classList.remove('open');
+  document.body.style.overflow = '';
+
+  // Выходим из fullscreen
+  if (document.exitFullscreen) {
+    document.exitFullscreen().catch(() => {});
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+// Закрытие по кнопке "Назад" на Android
+window.addEventListener('popstate', () => {
+  const modal = document.getElementById('videoModal');
+  if (modal.classList.contains('open')) closeVideoModal();
+});
+
+// Закрытие при выходе из fullscreen (кнопка Esc)
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    const modal = document.getElementById('videoModal');
+    if (modal.classList.contains('open')) {
+      // Не закрываем — просто убираем fullscreen, видео остаётся
+    }
+  }
+});
 
 function resetPlayBtn(partNum) {
   const btn = document.getElementById(`playbtn-${partNum}`);
