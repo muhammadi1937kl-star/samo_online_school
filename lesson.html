@@ -392,18 +392,24 @@ function buildPartsList() {
   }
 }
 
+// Кэш videoId чтобы при повторном нажатии не делать запрос к серверу
+const partVideoCache = {};
+
 // ═══════════════════════════════════════════════════════
 // ЗАПУСТИТЬ ЧАСТЬ — открываем fullscreen видео
 // ═══════════════════════════════════════════════════════
 async function startPart(partNum) {
-  const btn     = document.getElementById(`playbtn-${partNum}`);
-  const errEl   = document.getElementById(`error-${partNum}`);
+  const btn   = document.getElementById(`playbtn-${partNum}`);
+  const errEl = document.getElementById(`error-${partNum}`);
 
-  // Показываем спиннер на кнопке
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<div class="btn-spinner"></div>';
+  // Если видео уже было загружено — сразу открываем без запроса
+  if (partVideoCache[partNum]) {
+    openVideoModal(partNum, partVideoCache[partNum]);
+    return;
   }
+
+  // Показываем спиннер
+  if (btn) { btn.disabled = true; btn.innerHTML = '<div class="btn-spinner"></div>'; }
   if (errEl) errEl.classList.remove('show');
 
   try {
@@ -416,14 +422,20 @@ async function startPart(partNum) {
     const data = await res.json();
 
     if (data.ok && data.videoId) {
-      // ✅ Открываем fullscreen модалку с видео
+      // Кэшируем videoId
+      partVideoCache[partNum] = data.videoId;
+
+      // Восстанавливаем кнопку ДО открытия модалки
+      resetPlayBtn(partNum);
+
+      // Открываем fullscreen
       openVideoModal(partNum, data.videoId);
 
       // Отмечаем просмотрено
       watchedParts.add(partNum);
       markWatched(partNum);
       updateProgress();
-      document.getElementById(`sub-${partNum}`).textContent = '✓ Воспроизводится';
+      document.getElementById(`sub-${partNum}`).textContent = '✓ Просмотрено';
 
     } else if (data.denied) {
       showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
@@ -442,22 +454,20 @@ async function startPart(partNum) {
 // ═══════════════════════════════════════════════════════
 // ОТКРЫТЬ FULLSCREEN МОДАЛКУ С ВИДЕО
 // ═══════════════════════════════════════════════════════
+let currentModalPart = null;
+
 function openVideoModal(partNum, videoId) {
-  const modal   = document.getElementById('videoModal');
-  const iframe  = document.getElementById('vmIframe');
-  const title   = document.getElementById('vmTitle');
+  const modal  = document.getElementById('videoModal');
+  const iframe = document.getElementById('vmIframe');
+  const title  = document.getElementById('vmTitle');
 
-  // Заголовок
+  currentModalPart = partNum;
   title.textContent = `${token.title} — Часть ${partNum}`;
-
-  // Устанавливаем src с autoplay
   iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
 
-  // Показываем модалку
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Запрашиваем полный экран на мобильном
   if (modal.requestFullscreen) {
     modal.requestFullscreen().catch(() => {});
   } else if (modal.webkitRequestFullscreen) {
@@ -471,16 +481,25 @@ function closeVideoModal() {
 
   // Останавливаем видео
   iframe.src = '';
-
   modal.classList.remove('open');
   document.body.style.overflow = '';
 
-  // Выходим из fullscreen
-  if (document.exitFullscreen) {
-    document.exitFullscreen().catch(() => {});
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
+  // Восстанавливаем кнопку Play на карточке
+  if (currentModalPart !== null) {
+    resetPlayBtn(currentModalPart);
+    // Обновляем подпись
+    const sub = document.getElementById(`sub-${currentModalPart}`);
+    if (sub && watchedParts.has(currentModalPart)) {
+      sub.textContent = '▶ Смотреть снова';
+    }
+    currentModalPart = null;
   }
+
+  // Выходим из fullscreen
+  try {
+    if (document.exitFullscreen) document.exitFullscreen();
+    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } catch(e) {}
 }
 
 // Закрытие по кнопке "Назад" на Android
