@@ -210,7 +210,7 @@ const GOOGLE_CLIENT_ID = '256108679696-695niih35d5v6psfa9j8ls22cgpapjqk.apps.goo
 // parts: число частей (для отображения на карточке)
 // ═══════════════════════════════════════════
 const LESSONS = [
-  {id:1,title:'Лифт Ведущий от должника к миллионеру',desc:'У каждого есть шанс стать миллионером, выбраться из долгов!',emoji:'🧠',img:'9999.png',parts:6},
+  {id:1,title:'Основы предпринимательского мышления',desc:'Как думает успешный предприниматель. Первый шаг к изменению жизни. /br Как стать человеком на миллион? /br 2. От мышления должника до мышления миллионера + инструменты./br 3. Главные принципы достижения целей с помощью подхода «Сверху вниз»./br 4. Сильная позиция внутри и вне бизнеса. /br 5. Точка прорыва бизнесе. Как найти главное результативное действие? /br 6. 10 параметров фокуса внимания и действий в бизнесе, дающих результат. /br',emoji:'🧠',img:'9999.png',parts:6},
   {id:2,title:'Постановка целей и планирование',desc:'Система целеполагания, которая работает. Практические инструменты.',emoji:'🎯',img:'8888.png',parts:5},
   {id:3,title:'Управление временем и приоритеты',desc:'Как успевать больше за меньшее время. Матрица Эйзенхауэра.',emoji:'⏰',img:'7777.png',parts:6},
   {id:4,title:'Финансовая грамотность',desc:'Основы личных финансов. Активы и пассивы. Денежный поток.',emoji:'💰',img:'6666.png',parts:5},
@@ -336,9 +336,9 @@ function renderLessons(){
       ?`<img src="${l.img}" alt="" loading="lazy"><div class="thumb-overlay"></div>`
       :l.emoji;
     let btn;
-    if(!user) btn=`<button class="card-btn cb-login" onclick="openModal('loginModal')">🔑 Войти для доступа</button>`;
+    if(!user) btn=`<button class="card-btn cb-login" onclick="openModal('loginModal')">▶ Смотреть урок</button>`;
     else if(ok) btn=`<button class="card-btn cb-play" id="btn-${l.id}" onclick="goLesson(${l.id},this)">▶ Открыть урок</button>`;
-    else btn=`<button class="card-btn cb-locked" disabled>🔒 Доступ закрыт</button>`;
+    else btn=`<button class="card-btn cb-login" onclick="openModal('loginModal')">🔑 Войти для доступа</button>`;
 
     card.innerHTML=`
       <div class="thumb">${thumb}
