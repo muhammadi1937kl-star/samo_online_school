@@ -95,9 +95,48 @@
     overflow:hidden;
     cursor:pointer;
   }
+  /* Фоновое изображение обложки урока */
+  .video-wrap .vw-bg{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    transition:transform .4s ease;
+  }
+  .video-wrap:hover .vw-bg{
+    transform:scale(1.04);
+  }
+  /* Тёмный градиент поверх обложки */
+  .video-wrap .vw-dim{
+    position:absolute;inset:0;
+    background:linear-gradient(
+      to bottom,
+      rgba(0,0,0,.35) 0%,
+      rgba(0,0,0,.55) 50%,
+      rgba(0,0,0,.75) 100%
+    );
+  }
+  /* Номер части — левый нижний угол */
+  .video-wrap .vw-part-label{
+    position:absolute;bottom:12px;left:14px;z-index:3;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(6px);
+    color:rgba(255,255,255,.85);font-size:.75rem;font-weight:700;
+    border-radius:20px;padding:3px 12px;letter-spacing:.5px;
+    border:1px solid rgba(255,255,255,.15);
+  }
   .video-wrap.watched-bg{
     background:linear-gradient(135deg,#0a1a12 0%,#0d1f16 100%);
   }
+  /* Зелёная плашка "Просмотрено" поверх обложки */
+  .video-wrap .vw-watched-tag{
+    display:none;
+    position:absolute;top:10px;right:10px;z-index:4;
+    background:rgba(5,150,105,.85);backdrop-filter:blur(4px);
+    color:#fff;font-size:.72rem;font-weight:700;
+    border-radius:20px;padding:3px 12px;
+    border:1px solid rgba(255,255,255,.2);
+  }
+  .part-card.watched .video-wrap .vw-watched-tag{display:block;}
 
   /* Оверлей с кнопкой Play — занимает весь блок */
   .video-overlay{
@@ -428,10 +467,16 @@ function buildPartsList() {
   const list = document.getElementById('partsList');
   list.innerHTML = '';
 
+  const coverImg = token.img || '';
+
   for (let i = 1; i <= totalParts; i++) {
     const card = document.createElement('div');
     card.className = 'part-card';
     card.id = `card-${i}`;
+
+    const bgHtml = coverImg
+      ? `<img class="vw-bg" src="${coverImg}" alt="" loading="lazy" draggable="false">`
+      : '';
 
     card.innerHTML = `
       <div class="part-header">
@@ -443,15 +488,21 @@ function buildPartsList() {
         <span class="watched-badge">✓ Просмотрено</span>
       </div>
 
-      <!-- Превью с большой кнопкой Play — при нажатии открывается fullscreen -->
       <div class="video-wrap" id="vwrap-${i}" onclick="startPart(${i})">
+
+        ${bgHtml}
+        <div class="vw-dim"></div>
+        <div class="vw-part-label">▶ Часть ${i}</div>
+        <div class="vw-watched-tag">✓ Просмотрено</div>
+
         <div class="video-overlay" id="overlay-${i}">
           <button class="big-play-btn" id="playbtn-${i}">
             <svg viewBox="0 0 24 24" fill="white">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
           </button>
-          <span style="color:rgba(255,255,255,.6);font-size:.8rem;">Нажмите для просмотра</span>
+          <span style="color:rgba(255,255,255,.85);font-size:.85rem;font-weight:600;
+            text-shadow:0 1px 6px rgba(0,0,0,.9);">Нажмите для просмотра</span>
         </div>
 
         <div class="video-error" id="error-${i}" onclick="event.stopPropagation()">
