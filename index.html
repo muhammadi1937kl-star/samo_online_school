@@ -385,7 +385,7 @@ async function goLesson(lessonId,btnEl){
     if(data.ok){
       const l=LESSONS.find(x=>x.id===lessonId);
       sessionStorage.setItem('lesson_token',JSON.stringify({
-        lessonId,title:l.title,desc:l.desc,
+        lessonId,title:l.title,desc:l.desc,img:l.img||'',
         partsCount:data.partsCount,
         userName:user.name||user.login,
         userLogin:user.login,
