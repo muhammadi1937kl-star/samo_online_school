@@ -245,9 +245,20 @@ const LESSONS = [
 // ═══════════════════════════════════════════
 let googleTokenClient = null;
 
+// window.addEventListener('load', () => {
+//   const s = sessionStorage.getItem('u');
+//   if (s) { user = JSON.parse(s); refreshUI(); }
+//   renderLessons();
+// });
 window.addEventListener('load', () => {
   const s = sessionStorage.getItem('u');
-  if (s) { user = JSON.parse(s); refreshUI(); }
+  if (s) {
+    user = JSON.parse(s);
+    refreshUI();
+  } else {
+    // гость — показываем модалку логина по центру экрана
+    setTimeout(() => openModal('loginModal'), 400);
+  }
   renderLessons();
 });
 
@@ -439,10 +450,15 @@ function showDenied(i,t,m){
   document.getElementById('dText').textContent=m;
   openModal('deniedModal');
 }
+// function openModal(id){
+//   document.getElementById(id).classList.add('show');
+//   if(id==='loginModal')setTimeout(()=>document.getElementById('iLogin').focus(),80);
+// }
+
 function openModal(id){
   document.getElementById(id).classList.add('show');
-  if(id==='loginModal')setTimeout(()=>document.getElementById('iLogin').focus(),80);
 }
+  
 function closeModal(id){
   document.getElementById(id).classList.remove('show');
   if(id==='loginModal')hideErr();
