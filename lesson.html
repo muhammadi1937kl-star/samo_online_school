@@ -609,22 +609,19 @@ function openVideoModal(partNum, videoId) {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-    // На iOS пробуем iframe, но через 5 сек даём fallback со ссылкой
-    iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
-
-    const iosTimer = setTimeout(() => {
-      showIosFallback(videoId);
-    }, 5000);
-    iframe._iosTimer = iosTimer;
-
-    iframe.onload = () => {
-      clearTimeout(iframe._iosTimer);
-      loading.classList.add('hide');
-    };
-    iframe.onerror = () => {
-      clearTimeout(iframe._iosTimer);
-      showIosFallback(videoId);
-    };
+    // iOS Safari ломает видео Google Диска, встроенное в маленький iframe —
+    // при нажатии Play видео "вылетает" в нативный fullscreen с огромными
+    // чёрными полосами (размеры берутся из тесного iframe, а не с экрана).
+    // Поэтому на iOS сразу уходим на страницу предпросмотра Google Диска
+    // в ЭТОЙ ЖЕ вкладке (не window.open — Safari блокирует всплывающие
+    // вкладки вне прямого жеста пальцем). На полноценной странице Диска
+    // видео рендерится штатно, на весь экран, без багов.
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width   = '';
+    modal.classList.remove('open');
+    window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
+    return;
 
   } else {
     // Desktop и Android — обычный iframe с autoplay
