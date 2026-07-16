@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Саидмурод Давлатов — Онлайн Уроки</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://accounts.google.com">
+<link rel="preconnect" href="https://script.google.com">
+<link rel="dns-prefetch" href="https://drive.google.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -255,12 +260,38 @@ window.addEventListener('load', () => {
   if (s) {
     user = JSON.parse(s);
     refreshUI();
-  } else {
-    // гость — показываем модалку логина по центру экрана
+  } else if (!sessionStorage.getItem('loginPromptShown')) {
+    // гость — показываем модалку логина один раз за сессию,
+    // а не при каждой загрузке/обновлении страницы
+    sessionStorage.setItem('loginPromptShown', '1');
     setTimeout(() => openModal('loginModal'), 400);
   }
   renderLessons();
+  syncLessonsMeta();
 });
+
+// ═══════════════════════════════════════════
+// СИНХРОНИЗАЦИЯ КОЛ-ВА ЧАСТЕЙ С ТАБЛИЦЕЙ "ВИДЕО"
+// Чтобы не приходилось вручную поправлять LESSONS.parts
+// в коде каждый раз, когда в таблице добавляется новая часть.
+// Если запрос не удался — просто остаются значения по умолчанию.
+// ═══════════════════════════════════════════
+async function syncLessonsMeta() {
+  try {
+    const res  = await fetch(`${SCRIPT_URL}?action=getLessonsMeta`);
+    const data = await res.json();
+    if (!data.ok || !data.lessons) return;
+
+    let changed = false;
+    data.lessons.forEach(({ lessonId, partsCount }) => {
+      const l = LESSONS.find(x => x.id === lessonId);
+      if (l && l.parts !== partsCount) { l.parts = partsCount; changed = true; }
+    });
+    if (changed) renderLessons();
+  } catch (e) {
+    // тихо игнорируем — не критично для отображения страницы
+  }
+}
 
 // Инициализация Google Identity Services
 function initGoogleAuth() {
@@ -315,6 +346,8 @@ async function handleGoogleToken(tokenResponse) {
       renderLessons();
     } else if (data.denied) {
       showErr('Ваш доступ заблокирован администратором.');
+    } else if (data.pending) {
+      showErr('Ваша заявка на рассмотрении у администратора. Мы уведомим вас, когда доступ откроют.');
     } else {
       showErr('Этот Google-аккаунт не зарегистрирован. Обратитесь к администратору.');
     }
@@ -364,7 +397,7 @@ function renderLessons(){
     const card=document.createElement('div');
     card.className='card';
     const thumb=l.img
-      ?`<img src="${l.img}" alt="" loading="lazy"><div class="thumb-overlay"></div>`
+      ?`<img src="${l.img}" alt="" loading="lazy" decoding="async"><div class="thumb-overlay"></div>`
       :l.emoji;
     let btn;
     if(!user) btn=`<button class="card-btn cb-login" onclick="openModal('loginModal')">▶ Смотреть урок</button>`;
@@ -408,6 +441,9 @@ async function goLesson(lessonId,btnEl){
       user.lessons=user.lessons.filter(id=>id!==lessonId);
       sessionStorage.setItem('u',JSON.stringify(user));
       renderLessons();
+    }else if(data.pending){
+      showDenied('⏳','Заявка на рассмотрении','Ваш аккаунт ещё не подтверждён администратором.');
+      btnEl.disabled=false;btnEl.innerHTML='▶ Открыть урок';
     }else{
       showDenied('🔒','Нет доступа','Этот урок вам недоступен.');
       btnEl.disabled=false;btnEl.innerHTML='▶ Открыть урок';
