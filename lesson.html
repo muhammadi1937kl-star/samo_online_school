@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Урок — Давлатов Академия</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://drive.google.com">
+<link rel="preconnect" href="https://script.google.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -187,7 +191,7 @@
   #videoModal .vm-close-btn:hover,
   #videoModal .vm-close-btn:active{background:rgba(255,255,255,.4);}
 
-  /* Обёртка iframe — занимает всё оставшееся место */
+  /* Обёртка video-плеера — занимает всё оставшееся место */
   #videoModal .vm-frame-wrap{
     flex:1;
     position:relative;
@@ -197,19 +201,19 @@
     background:#000;
     overflow:hidden;
     padding-bottom:env(safe-area-inset-bottom, 0px);
-    /* Минимальная высота чтобы iframe был виден */
+    /* Минимальная высота чтобы плеер был виден */
     min-height:200px;
   }
-  #videoModal iframe{
+  #videoModal video{
     position:absolute;
     top:0;left:0;
     width:100%;height:100%;
     border:none;display:block;
-    /* iOS Safari критичные атрибуты */
-    -webkit-overflow-scrolling:touch;
+    background:#000;
+    object-fit:contain;
   }
 
-  /* iOS-заглушка когда iframe не грузится */
+  /* Заглушка когда видео не грузится (реальная ошибка сети) */
   #vmFallback{
     display:none;
     flex-direction:column;
@@ -381,25 +385,22 @@
       <div class="big-spinner"></div>
     </div>
 
-    <!-- iframe для Google Drive -->
-    <iframe id="vmIframe" src=""
-      allowfullscreen
-      webkitallowfullscreen
-      mozallowfullscreen
-      allow="autoplay; encrypted-media; fullscreen; picture-in-picture; web-share"
-      referrerpolicy="no-referrer"
-      scrolling="no"
-      frameborder="0"
+    <!-- Свой видео-плеер: байты идут через наш видео-прокси (Cloudflare Worker),
+         Google Диск клиент вообще не видит и на него не переходит -->
+    <video id="vmVideo"
+      controls
+      playsinline
+      webkit-playsinline
+      controlsList="nodownload noremoteplayback"
+      disablePictureInPicture="false"
       style="display:block;"
-    ></iframe>
+    ></video>
 
-    <!-- Запасной вариант для iOS если iframe не работает -->
+    <!-- Показывается только при реальной ошибке загрузки (например, нет сети) -->
     <div id="vmFallback">
-      <span style="font-size:3rem;">📱</span>
-      <p>На вашем устройстве видео откроется в новой вкладке</p>
-      <a id="vmFallbackLink" href="#" target="_blank" rel="noopener">
-        ▶ Открыть видео
-      </a>
+      <span style="font-size:3rem;">⚠️</span>
+      <p>Не удалось загрузить видео. Проверьте интернет-соединение.</p>
+      <button onclick="event.stopPropagation();retryModalVideo()" style="background:var(--gold);color:#fff;border:none;border-radius:12px;padding:.8rem 2rem;font-family:'Nunito',sans-serif;font-weight:700;font-size:1rem;cursor:pointer;">↻ Попробовать снова</button>
       <button onclick="closeVideoModal()" style="background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.7);border-radius:8px;padding:.5rem 1rem;font-family:'Nunito',sans-serif;cursor:pointer;margin-top:.5rem;">Закрыть</button>
     </div>
   </div>
@@ -546,15 +547,15 @@ async function startPart(partNum) {
     );
     const data = await res.json();
 
-    if (data.ok && data.videoId) {
-      // Кэшируем videoId
-      partVideoCache[partNum] = data.videoId;
+    if (data.ok && data.streamUrl) {
+      // Кэшируем ссылку на видео-прокси (она живёт несколько часов — см. TOKEN_TTL_SEC в Code.gs)
+      partVideoCache[partNum] = data.streamUrl;
 
       // Восстанавливаем кнопку ДО открытия модалки
       resetPlayBtn(partNum);
 
       // Открываем fullscreen
-      openVideoModal(partNum, data.videoId);
+      openVideoModal(partNum, data.streamUrl);
 
       // Отмечаем просмотрено
       watchedParts.add(partNum);
@@ -564,6 +565,9 @@ async function startPart(partNum) {
 
     } else if (data.denied) {
       showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
+      resetPlayBtn(partNum);
+    } else if (data.pending) {
+      showPartError(partNum, '⏳ На рассмотрении', 'Ваш аккаунт ещё не подтверждён администратором.');
       resetPlayBtn(partNum);
     } else {
       showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
@@ -580,23 +584,23 @@ async function startPart(partNum) {
 // ОТКРЫТЬ FULLSCREEN МОДАЛКУ С ВИДЕО
 // ═══════════════════════════════════════════════════════
 let currentModalPart = null;
+let currentStreamUrl = null;
 
-function openVideoModal(partNum, videoId) {
+function openVideoModal(partNum, streamUrl) {
   const modal    = document.getElementById('videoModal');
-  const iframe   = document.getElementById('vmIframe');
+  const video    = document.getElementById('vmVideo');
   const title    = document.getElementById('vmTitle');
   const loading  = document.getElementById('vmLoading');
   const fallback = document.getElementById('vmFallback');
-  const fallbackLink = document.getElementById('vmFallbackLink');
 
-  currentModalPart = partNum;
+  currentModalPart  = partNum;
+  currentStreamUrl  = streamUrl;
   title.textContent = `${token.title} — Часть ${partNum}`;
 
   // Сбрасываем состояние
   loading.classList.remove('hide');
   fallback.classList.remove('show');
-  iframe.style.display = 'block';
-  iframe.src = '';
+  video.style.display = 'block';
 
   // Открываем модалку
   modal.classList.add('open');
@@ -604,65 +608,49 @@ function openVideoModal(partNum, videoId) {
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
 
-  // Определяем iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  // Свой <video>-тег работает одинаково на iPhone, Android и десктопе —
+  // никакого чужого интерфейса Google Диска, своя перемотка и стиль.
+  video.src = streamUrl;
+  video.load();
 
-  if (isIOS) {
-    // iOS Safari ломает видео Google Диска, встроенное в маленький iframe —
-    // при нажатии Play видео "вылетает" в нативный fullscreen с огромными
-    // чёрными полосами (размеры берутся из тесного iframe, а не с экрана).
-    // Поэтому на iOS сразу уходим на страницу предпросмотра Google Диска
-    // в ЭТОЙ ЖЕ вкладке (не window.open — Safari блокирует всплывающие
-    // вкладки вне прямого жеста пальцем). На полноценной странице Диска
-    // видео рендерится штатно, на весь экран, без багов.
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width   = '';
-    modal.classList.remove('open');
-    window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
-    return;
+  video.oncanplay = () => {
+    loading.classList.add('hide');
+    video.play().catch(() => {}); // autoplay может быть заблокирован — это ок, просто ждём тапа
+  };
+  video.onerror = () => {
+    loading.classList.add('hide');
+    video.style.display = 'none';
+    fallback.classList.add('show');
+  };
 
-  } else {
-    // Desktop и Android — обычный iframe с autoplay
-    iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
-    iframe.onload = () => { loading.classList.add('hide'); };
-    iframe.onerror = () => { loading.classList.add('hide'); };
-    setTimeout(() => loading.classList.add('hide'), 3000);
-
-    // Пробуем fullscreen
-    setTimeout(() => {
-      if (modal.requestFullscreen) {
-        modal.requestFullscreen().catch(() => {});
-      } else if (modal.webkitRequestFullscreen) {
-        modal.webkitRequestFullscreen();
-      }
-    }, 100);
-  }
+  // Пробуем fullscreen (на iOS Safari работает через сам <video>,
+  // на iPad/десктопе/Android — через обёртку модалки)
+  setTimeout(() => {
+    if (modal.requestFullscreen) {
+      modal.requestFullscreen().catch(() => {});
+    } else if (modal.webkitRequestFullscreen) {
+      modal.webkitRequestFullscreen();
+    } else if (video.webkitEnterFullscreen) {
+      // iPhone Safari: у <video> есть свой нативный fullscreen API
+      video.webkitEnterFullscreen();
+    }
+  }, 100);
 }
 
-function showIosFallback(videoId) {
-  const loading  = document.getElementById('vmLoading');
+function retryModalVideo() {
   const fallback = document.getElementById('vmFallback');
-  const iframe   = document.getElementById('vmIframe');
-  const fallbackLink = document.getElementById('vmFallbackLink');
-
-  loading.classList.add('hide');
-  iframe.style.display = 'none';
-  fallbackLink.href = `https://drive.google.com/file/d/${videoId}/view`;
-  fallback.classList.add('show');
-
-  // Открываем видео в новой вкладке автоматически
-  window.open(`https://drive.google.com/file/d/${videoId}/view`, '_blank');
+  fallback.classList.remove('show');
+  if (currentStreamUrl) openVideoModal(currentModalPart, currentStreamUrl);
 }
 
 function closeVideoModal() {
-  const modal  = document.getElementById('videoModal');
-  const iframe = document.getElementById('vmIframe');
+  const modal = document.getElementById('videoModal');
+  const video = document.getElementById('vmVideo');
 
-  // Останавливаем видео
-  if (iframe._iosTimer) clearTimeout(iframe._iosTimer);
-  iframe.src = '';
+  // Останавливаем видео и освобождаем ресурсы
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
   modal.classList.remove('open');
 
   // Восстанавливаем скролл страницы (iOS fix)
