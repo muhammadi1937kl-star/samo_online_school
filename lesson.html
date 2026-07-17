@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Урок — Давлатов Академия</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://drive.google.com">
+<link rel="preconnect" href="https://script.google.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
@@ -565,6 +569,9 @@ async function startPart(partNum) {
     } else if (data.denied) {
       showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
       resetPlayBtn(partNum);
+    } else if (data.pending) {
+      showPartError(partNum, '⏳ На рассмотрении', 'Ваш аккаунт ещё не подтверждён администратором.');
+      resetPlayBtn(partNum);
     } else {
       showPartError(partNum, '⚠ Ошибка', 'Не удалось загрузить. Попробуйте снова.');
       resetPlayBtn(partNum);
@@ -609,22 +616,19 @@ function openVideoModal(partNum, videoId) {
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
   if (isIOS) {
-    // На iOS пробуем iframe, но через 5 сек даём fallback со ссылкой
-    iframe.src = `https://drive.google.com/file/d/${videoId}/preview`;
-
-    const iosTimer = setTimeout(() => {
-      showIosFallback(videoId);
-    }, 5000);
-    iframe._iosTimer = iosTimer;
-
-    iframe.onload = () => {
-      clearTimeout(iframe._iosTimer);
-      loading.classList.add('hide');
-    };
-    iframe.onerror = () => {
-      clearTimeout(iframe._iosTimer);
-      showIosFallback(videoId);
-    };
+    // iOS Safari ломает видео Google Диска, встроенное в маленький iframe —
+    // при нажатии Play видео "вылетает" в нативный fullscreen с огромными
+    // чёрными полосами (размеры берутся из тесного iframe, а не с экрана).
+    // Поэтому на iOS сразу уходим на страницу предпросмотра Google Диска
+    // в ЭТОЙ ЖЕ вкладке (не window.open — Safari блокирует всплывающие
+    // вкладки вне прямого жеста пальцем). На полноценной странице Диска
+    // видео рендерится штатно, на весь экран, без багов.
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width   = '';
+    modal.classList.remove('open');
+    window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
+    return;
 
   } else {
     // Desktop и Android — обычный iframe с autoplay
