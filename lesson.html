@@ -636,32 +636,39 @@ function openVideoModal(partNum, videoId) {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  // Раньше на iOS страница целиком уводила пользователя на
-  // drive.google.com/preview — именно из-за этого на iPhone было видно
-  // "чужой" интерфейс Google Диска с крупными кнопками поверх видео,
-  // и пользователь фактически покидал сайт. Теперь iPhone смотрит
-  // видео в ТОМ ЖЕ встроенном плеере, что и все остальные — просто
-  // без API полноэкранного режима (см. ниже), который на iOS Safari
-  // как раз и вызывал те самые "прыгающие" чёрные полосы.
+  if (isIOS) {
+    // На iOS Safari видео внутри чужого (кросс-доменного) iframe всегда
+    // получает РОДНОЙ плеер самого iPhone (пауза/перемотка/CC/скорость) —
+    // это ограничение самого iOS, а не наш баг, и убрать эти кнопки,
+    // пока видео физически лежит на drive.google.com, невозможно никаким
+    // кодом на нашей странице. Поэтому на iOS уходим на полноэкранный
+    // предпросмотр Google Диска в этой же вкладке — там видео минимум
+    // корректно занимает весь экран (без чёрных полос), просто с
+    // родными кнопками Диска/iOS поверх.
+    document.body.style.overflow = '';
+    document.body.style.position = '';
+    document.body.style.width   = '';
+    modal.classList.remove('open');
+    window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
+    return;
+  }
+
+  // Desktop и Android — обычный iframe с autoplay
   iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
   iframe.onload = () => { loading.classList.add('hide'); };
   iframe.onerror = () => { loading.classList.add('hide'); };
   setTimeout(() => loading.classList.add('hide'), 3000);
 
-  if (!isIOS) {
-    // Desktop и Android — можно смело запросить нативный fullscreen.
-    // На iOS Safari requestFullscreen для произвольного div не работает
-    // стабильно (именно это и ломало картинку раньше), поэтому там
-    // просто оставляем модалку на весь экран через CSS (100dvh) —
-    // выглядит как fullscreen, но без глюков плеера.
-    setTimeout(() => {
-      if (modal.requestFullscreen) {
-        modal.requestFullscreen().catch(() => {});
-      } else if (modal.webkitRequestFullscreen) {
-        modal.webkitRequestFullscreen();
-      }
-    }, 100);
-  }
+  // Пробуем fullscreen (стабильно работает только на десктопе/Android;
+  // на iOS Safari API fullscreen для произвольного div ненадёжен —
+  // поэтому туда мы вообще не заходим, см. redirect выше)
+  setTimeout(() => {
+    if (modal.requestFullscreen) {
+      modal.requestFullscreen().catch(() => {});
+    } else if (modal.webkitRequestFullscreen) {
+      modal.webkitRequestFullscreen();
+    }
+  }, 100);
 
   startWatermark();
   startHeartbeat();
