@@ -385,6 +385,13 @@
       <div class="big-spinner"></div>
     </div>
 
+    <!-- Водяной знак: email зрителя + время. Не блокирует клики по плееру,
+         сдвигается по экрану, чтобы его нельзя было просто обрезать при записи экрана. -->
+    <div id="vmWatermark" style="position:absolute;z-index:6;pointer-events:none;
+      color:rgba(255,255,255,.35);font-family:'Nunito',sans-serif;font-size:.72rem;
+      font-weight:700;text-shadow:0 1px 3px rgba(0,0,0,.8);white-space:nowrap;
+      transition:top .8s ease, left .8s ease;"></div>
+
     <!-- iframe для Google Drive -->
     <iframe id="vmIframe" src=""
       allowfullscreen
@@ -418,6 +425,13 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzsTyV7GUad0xJhCXCJ7
 let token      = null;
 let totalParts = 0;
 let watchedParts = new Set(); // просмотренные части
+
+// Отключаем правый клик/долгое нажатие над видео — не панацея (это лишь
+// сдерживающая мера на уровне нашей страницы), но убирает самый простой
+// способ "Сохранить как..." прямо с превью и модалки.
+document.addEventListener('contextmenu', (e) => {
+  if (e.target.closest('.video-wrap, #videoModal')) e.preventDefault();
+});
 
 // ═══════════════════════════════════════════════════════
 // ЗАГРУЗКА — проверяем токен
@@ -545,12 +559,19 @@ async function startPart(partNum) {
     const res  = await fetch(
       `${SCRIPT_URL}?action=getPart` +
       `&login=${encodeURIComponent(token.userLogin)}` +
+      `&session=${encodeURIComponent(token.session || '')}` +
       `&lessonId=${token.lessonId}` +
       `&part=${partNum}`
     );
     const data = await res.json();
 
-    if (data.ok && data.videoId) {
+    if (data.sessionExpired) {
+      sessionStorage.removeItem('lesson_token');
+      sessionStorage.removeItem('u');
+      showPartError(partNum, '📱 Вход с другого устройства', 'Этот аккаунт открыт в другом месте. Войдите заново.');
+      resetPlayBtn(partNum);
+      setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+    } else if (data.ok && data.videoId) {
       // Кэшируем videoId
       partVideoCache[partNum] = data.videoId;
 
@@ -615,29 +636,24 @@ function openVideoModal(partNum, videoId) {
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-  if (isIOS) {
-    // iOS Safari ломает видео Google Диска, встроенное в маленький iframe —
-    // при нажатии Play видео "вылетает" в нативный fullscreen с огромными
-    // чёрными полосами (размеры берутся из тесного iframe, а не с экрана).
-    // Поэтому на iOS сразу уходим на страницу предпросмотра Google Диска
-    // в ЭТОЙ ЖЕ вкладке (не window.open — Safari блокирует всплывающие
-    // вкладки вне прямого жеста пальцем). На полноценной странице Диска
-    // видео рендерится штатно, на весь экран, без багов.
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.width   = '';
-    modal.classList.remove('open');
-    window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
-    return;
+  // Раньше на iOS страница целиком уводила пользователя на
+  // drive.google.com/preview — именно из-за этого на iPhone было видно
+  // "чужой" интерфейс Google Диска с крупными кнопками поверх видео,
+  // и пользователь фактически покидал сайт. Теперь iPhone смотрит
+  // видео в ТОМ ЖЕ встроенном плеере, что и все остальные — просто
+  // без API полноэкранного режима (см. ниже), который на iOS Safari
+  // как раз и вызывал те самые "прыгающие" чёрные полосы.
+  iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
+  iframe.onload = () => { loading.classList.add('hide'); };
+  iframe.onerror = () => { loading.classList.add('hide'); };
+  setTimeout(() => loading.classList.add('hide'), 3000);
 
-  } else {
-    // Desktop и Android — обычный iframe с autoplay
-    iframe.src = `https://drive.google.com/file/d/${videoId}/preview?autoplay=1`;
-    iframe.onload = () => { loading.classList.add('hide'); };
-    iframe.onerror = () => { loading.classList.add('hide'); };
-    setTimeout(() => loading.classList.add('hide'), 3000);
-
-    // Пробуем fullscreen
+  if (!isIOS) {
+    // Desktop и Android — можно смело запросить нативный fullscreen.
+    // На iOS Safari requestFullscreen для произвольного div не работает
+    // стабильно (именно это и ломало картинку раньше), поэтому там
+    // просто оставляем модалку на весь экран через CSS (100dvh) —
+    // выглядит как fullscreen, но без глюков плеера.
     setTimeout(() => {
       if (modal.requestFullscreen) {
         modal.requestFullscreen().catch(() => {});
@@ -646,6 +662,9 @@ function openVideoModal(partNum, videoId) {
       }
     }, 100);
   }
+
+  startWatermark();
+  startHeartbeat();
 }
 
 function showIosFallback(videoId) {
@@ -671,6 +690,8 @@ function closeVideoModal() {
   if (iframe._iosTimer) clearTimeout(iframe._iosTimer);
   iframe.src = '';
   modal.classList.remove('open');
+  stopWatermark();
+  stopHeartbeat();
 
   // Восстанавливаем скролл страницы (iOS fix)
   document.body.style.overflow = '';
@@ -710,6 +731,77 @@ document.addEventListener('fullscreenchange', () => {
     }
   }
 });
+
+// ═══════════════════════════════════════════════════════
+// ВОДЯНОЙ ЗНАК ПОВЕРХ ВИДЕО
+// Показывает email/имя зрителя и время — если кто-то запишет
+// экран и выложит урок, будет видно, чей это аккаунт.
+// Знак периодически "прыгает" по углам, чтобы его нельзя было
+// просто обрезать кадром при записи.
+// ═══════════════════════════════════════════════════════
+let watermarkTimer = null;
+function startWatermark() {
+  const wm = document.getElementById('vmWatermark');
+  const who = token.userName || token.userLogin || '';
+
+  const positions = [
+    { top: '10px',    left: '12px' },
+    { top: '10px',    right: '12px', left: 'auto' },
+    { bottom: '14px', left: '12px', top: 'auto' },
+    { bottom: '14px', right: '12px', left: 'auto', top: 'auto' },
+  ];
+  let idx = 0;
+
+  function tick() {
+    const now = new Date().toLocaleString('ru-RU', {
+      day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+    });
+    wm.textContent = `${who} · ${now}`;
+    const p = positions[idx % positions.length];
+    wm.style.top = p.top || 'auto';
+    wm.style.left = p.left !== undefined ? p.left : 'auto';
+    wm.style.right = p.right || 'auto';
+    wm.style.bottom = p.bottom || 'auto';
+    idx++;
+  }
+
+  tick();
+  watermarkTimer = setInterval(tick, 15000);
+}
+function stopWatermark() {
+  if (watermarkTimer) { clearInterval(watermarkTimer); watermarkTimer = null; }
+}
+
+// ═══════════════════════════════════════════════════════
+// HEARTBEAT — раз в 60 сек сообщаем серверу, что зритель ещё
+// смотрит видео. Заодно сервер проверяет, не вошли ли с другого
+// устройства — если да, плеер мягко закроется.
+// ═══════════════════════════════════════════════════════
+let heartbeatTimer = null;
+function startHeartbeat() {
+  stopHeartbeat();
+  const ping = async () => {
+    try {
+      const res  = await fetch(
+        `${SCRIPT_URL}?action=heartbeat` +
+        `&login=${encodeURIComponent(token.userLogin)}` +
+        `&session=${encodeURIComponent(token.session || '')}`
+      );
+      const data = await res.json();
+      if (data.sessionExpired) {
+        closeVideoModal();
+        sessionStorage.removeItem('lesson_token');
+        sessionStorage.removeItem('u');
+        alert('Этот аккаунт открыт на другом устройстве. Войдите заново.');
+        window.location.href = 'index.html';
+      }
+    } catch (e) { /* тихо игнорируем — не критично */ }
+  };
+  heartbeatTimer = setInterval(ping, 60000);
+}
+function stopHeartbeat() {
+  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+}
 
 function resetPlayBtn(partNum) {
   const btn = document.getElementById(`playbtn-${partNum}`);
