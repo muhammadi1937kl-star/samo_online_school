@@ -339,7 +339,7 @@ async function handleGoogleToken(tokenResponse) {
     const data = await res.json();
 
     if (data.ok) {
-      user = { login: email, name: name, lessons: data.lessons || [] };
+      user = { login: email, name: name, lessons: data.lessons || [], session: data.session || '' };
       sessionStorage.setItem('u', JSON.stringify(user));
       closeModal('loginModal');
       refreshUI();
@@ -424,7 +424,7 @@ async function goLesson(lessonId,btnEl){
   btnEl.disabled=true;
   btnEl.innerHTML=`<div class="btn-spinner"></div> Проверяем...`;
   try{
-    const res=await fetch(`${SCRIPT_URL}?action=checkLesson&login=${encodeURIComponent(user.login)}&lessonId=${lessonId}`);
+    const res=await fetch(`${SCRIPT_URL}?action=checkLesson&login=${encodeURIComponent(user.login)}&lessonId=${lessonId}&session=${encodeURIComponent(user.session||'')}`);
     const data=await res.json();
     if(data.ok){
       const l=LESSONS.find(x=>x.id===lessonId);
@@ -433,9 +433,13 @@ async function goLesson(lessonId,btnEl){
         partsCount:data.partsCount,
         userName:user.name||user.login,
         userLogin:user.login,
+        session:user.session||'',
         ts:Date.now()
       }));
       window.location.href='lesson.html';
+    }else if(data.sessionExpired){
+      showDenied('📱','Вход с другого устройства','Этот аккаунт сейчас открыт на другом телефоне или компьютере. Войдите заново, чтобы продолжить здесь.');
+      signOut();
     }else if(data.denied){
       showDenied('🚫','Доступ закрыт','Администратор закрыл ваш доступ.');
       user.lessons=user.lessons.filter(id=>id!==lessonId);
