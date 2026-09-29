@@ -41,26 +41,13 @@
   /* ОСНОВНОЙ КОНТЕНТ */
   main{flex:1;max-width:860px;width:100%;margin:0 auto;padding:2rem 2rem 4rem;}
 
-  .breadcrumb{font-size:.82rem;color:var(--muted);margin-bottom:1.2rem;
-    display:flex;align-items:center;gap:.5rem;}
-  .breadcrumb a{color:var(--muted);text-decoration:none;}
-  .breadcrumb a:hover{color:var(--gold);}
-
   .lesson-badge{display:inline-block;background:var(--gold-bg);
     border:1.5px solid rgba(184,134,11,.3);color:var(--gold);
     font-size:.78rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;
     padding:.35rem .9rem;border-radius:20px;margin-bottom:.8rem;}
   .lesson-title{font-family:'Playfair Display',serif;
     font-size:clamp(1.4rem,4vw,2rem);font-weight:900;
-    line-height:1.2;margin-bottom:.4rem;color:var(--primary);}
-  .lesson-meta{color:var(--muted);font-size:.85rem;margin-bottom:.5rem;font-weight:600;}
-
-  /* Прогресс */
-  .progress-bar-wrap{background:#E5E7EB;border-radius:20px;height:6px;
-    margin-bottom:1.8rem;overflow:hidden;}
-  .progress-bar-fill{height:100%;background:var(--gold);border-radius:20px;
-    transition:width .4s ease;}
-  .progress-label{font-size:.8rem;color:var(--muted);margin-bottom:.4rem;font-weight:600;}
+    line-height:1.2;margin-bottom:1.6rem;color:var(--primary);}
 
   /* ═══ СПИСОК ЧАСТЕЙ ═══ */
   .parts-list{display:flex;flex-direction:column;gap:1.5rem;}
@@ -72,30 +59,13 @@
     box-shadow:var(--sh);transition:border-color .2s,box-shadow .2s;
   }
   .part-card.watched{border-color:rgba(5,150,105,.3);}
-
-  /* Заголовок части */
-  .part-header{
-    display:flex;align-items:center;gap:.8rem;
-    padding:.85rem 1.2rem;
-  }
-  .part-num{
-    width:34px;height:34px;border-radius:50%;flex-shrink:0;
-    background:var(--gold-bg);border:2px solid rgba(184,134,11,.3);
-    color:var(--gold);font-weight:800;font-size:.85rem;
-    display:flex;align-items:center;justify-content:center;
-  }
-  .part-card.watched .part-num{background:var(--green-bg);border-color:rgba(5,150,105,.3);color:var(--green);}
-  .part-info{flex:1;}
-  .part-title{font-weight:700;font-size:.95rem;color:var(--primary);margin-bottom:.1rem;}
-  .part-sub{font-size:.78rem;color:var(--muted);}
-  .part-action{flex-shrink:0;}
+  .part-card .video-wrap:focus-visible{outline:3px solid var(--gold-l);outline-offset:-3px;}
 
   /* Видео-блок — превью с кнопкой Play */
   .video-wrap{
     position:relative;width:100%;
     padding-bottom:56.25%; /* 16:9 */
     background:linear-gradient(135deg,#0d0d1a 0%,#1a1228 100%);
-    border-radius:0 0 14px 14px;
     overflow:hidden;
     cursor:pointer;
   }
@@ -278,12 +248,6 @@
     padding:.5rem 1.2rem;font-family:'Nunito',sans-serif;font-weight:700;
     font-size:.85rem;cursor:pointer;margin-top:.3rem;}
 
-  /* Значок просмотрено в шапке части */
-  .watched-badge{display:none;background:var(--green-bg);border:1.5px solid rgba(5,150,105,.3);
-    color:var(--green);border-radius:20px;font-size:.75rem;font-weight:700;
-    padding:.2rem .7rem;}
-  .part-card.watched .watched-badge{display:inline-block;}
-
   /* Описание урока */
   .desc-block{background:#fff;border:1px solid var(--border);border-radius:16px;
     padding:1.5rem 2rem;box-shadow:var(--sh);margin-top:1.5rem;}
@@ -313,9 +277,6 @@
   @media(max-width:600px){
     header{padding:0 1rem;}
     main{padding:1.2rem 1rem 3rem;}
-    .part-header{padding:.85rem 1rem;gap:.8rem;}
-    .part-num{width:34px;height:34px;font-size:.8rem;}
-    .play-btn,.watched-icon{width:38px;height:38px;}
   }
 </style>
 </head>
@@ -335,27 +296,14 @@
 <!-- СТРАНИЦА УРОКА -->
 <main id="lessonPage" style="display:none;">
 
-  <div class="breadcrumb">
-    <a href="index.html">Главная</a><span>›</span>
-    <a href="index.html">Уроки</a><span>›</span>
-    <span id="bcTitle"></span>
-  </div>
-
   <div class="lesson-badge" id="lessonNum"></div>
   <h1 class="lesson-title" id="lessonTitle"></h1>
-  <p class="lesson-meta">🎓 Саидмурод Давлатов</p>
-
-  <!-- Прогресс -->
-  <p class="progress-label" id="progressLabel"></p>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-fill" id="progressFill" style="width:0%"></div>
-  </div>
 
   <!-- Список частей -->
   <div class="parts-list" id="partsList"></div>
 
   <!-- Описание -->
-  <div class="desc-block">
+  <div class="desc-block" id="descBlock" style="display:none;">
     <h4>📖 Об этом уроке</h4>
     <p id="lessonDesc"></p>
   </div>
@@ -371,7 +319,7 @@
   <a href="index.html" class="go-home">← На главную</a>
 </div>
 
-<footer>© 2025 Давлатов Академия · Все права защищены</footer>
+<footer>© 2026 Давлатов Академия · Все права защищены</footer>
 
 <!-- FULLSCREEN ВИДЕО МОДАЛКА -->
 <div id="videoModal">
@@ -393,7 +341,7 @@
       transition:top .8s ease, left .8s ease;"></div>
 
     <!-- iframe для Google Drive -->
-    <iframe id="vmIframe" src=""
+    <iframe id="vmIframe" src="about:blank" title="Видео урока"
       allowfullscreen
       webkitallowfullscreen
       mozallowfullscreen
@@ -467,13 +415,13 @@ function showLesson() {
   document.getElementById('userInitial').textContent = (token.userName||token.userLogin)[0].toUpperCase();
   document.getElementById('userName').textContent    = token.userName || token.userLogin;
 
-  document.getElementById('bcTitle').textContent    = `Урок ${token.lessonId}`;
   document.getElementById('lessonNum').textContent  = `Урок ${token.lessonId}`;
   document.getElementById('lessonTitle').textContent = token.title;
-  document.getElementById('lessonDesc').textContent  = token.desc || '';
+  const descText = (token.desc || '').trim();
+  document.getElementById('lessonDesc').textContent  = descText;
+  document.getElementById('descBlock').style.display = descText ? 'block' : 'none';
 
   buildPartsList();
-  updateProgress();
 
   document.getElementById('lessonPage').style.display = 'block';
 }
@@ -492,21 +440,12 @@ function buildPartsList() {
     card.className = 'part-card';
     card.id = `card-${i}`;
 
-    const bgHtml = coverImg
-      ? `<img class="vw-bg" src="${coverImg}" alt="" loading="lazy" draggable="false">`
-      : '';
+    const bgHtml = coverImg ? '<img class="vw-bg" alt="" loading="lazy" draggable="false">' : '';
 
     card.innerHTML = `
-      <div class="part-header">
-        <div class="part-num" id="num-${i}">${i}</div>
-        <div class="part-info">
-          <div class="part-title">Часть ${i}</div>
-          <div class="part-sub" id="sub-${i}">Нажмите ▶ для просмотра</div>
-        </div>
-        <span class="watched-badge">✓ Просмотрено</span>
-      </div>
-
-      <div class="video-wrap" id="vwrap-${i}" onclick="startPart(${i})">
+      <div class="video-wrap" id="vwrap-${i}" role="button" tabindex="0"
+           aria-label="Смотреть часть ${i}" onclick="startPart(${i})"
+           onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();startPart(${i});}">
 
         ${bgHtml}
         <div class="vw-dim"></div>
@@ -531,6 +470,8 @@ function buildPartsList() {
         </div>
       </div>`;
 
+    const bg = card.querySelector('.vw-bg');
+    if (bg) bg.src = coverImg;
     list.appendChild(card);
   }
 }
@@ -571,7 +512,7 @@ async function startPart(partNum) {
       showPartError(partNum, '📱 Вход с другого устройства', 'Этот аккаунт открыт в другом месте. Войдите заново.');
       resetPlayBtn(partNum);
       setTimeout(() => { window.location.href = 'index.html'; }, 2500);
-    } else if (data.ok && data.videoId) {
+    } else if (data.ok && data.videoId && /^[\w-]+$/.test(data.videoId)) {
       // Кэшируем videoId
       partVideoCache[partNum] = data.videoId;
 
@@ -584,8 +525,6 @@ async function startPart(partNum) {
       // Отмечаем просмотрено
       watchedParts.add(partNum);
       markWatched(partNum);
-      updateProgress();
-      document.getElementById(`sub-${partNum}`).textContent = '✓ Просмотрено';
 
     } else if (data.denied) {
       showPartError(partNum, '🚫 Доступ закрыт', 'Администратор закрыл ваш доступ.');
@@ -608,6 +547,9 @@ async function startPart(partNum) {
 // ОТКРЫТЬ FULLSCREEN МОДАЛКУ С ВИДЕО
 // ═══════════════════════════════════════════════════════
 let currentModalPart = null;
+let savedScrollY = 0;
+let fsTimer = null;
+let historyPushed = false;
 
 function openVideoModal(partNum, videoId) {
   const modal    = document.getElementById('videoModal');
@@ -624,13 +566,16 @@ function openVideoModal(partNum, videoId) {
   loading.classList.remove('hide');
   fallback.classList.remove('show');
   iframe.style.display = 'block';
-  iframe.src = '';
+  iframe.src = 'about:blank';
 
-  // Открываем модалку
+  // Открываем модалку (запоминаем позицию скролла, чтобы после закрытия не прыгать вверх)
+  savedScrollY = window.scrollY || 0;
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
   document.body.style.position = 'fixed';
   document.body.style.width = '100%';
+  document.body.style.top = `-${savedScrollY}px`;
+  try { history.pushState({ videoModal: true }, ''); historyPushed = true; } catch(e) { historyPushed = false; }
 
   // Определяем iOS
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
@@ -648,7 +593,10 @@ function openVideoModal(partNum, videoId) {
     document.body.style.overflow = '';
     document.body.style.position = '';
     document.body.style.width   = '';
+    document.body.style.top     = '';
     modal.classList.remove('open');
+    window.scrollTo(0, savedScrollY);
+    if (historyPushed) { historyPushed = false; try { history.back(); } catch(e) {} }
     window.location.href = `https://drive.google.com/file/d/${videoId}/preview`;
     return;
   }
@@ -662,7 +610,10 @@ function openVideoModal(partNum, videoId) {
   // Пробуем fullscreen (стабильно работает только на десктопе/Android;
   // на iOS Safari API fullscreen для произвольного div ненадёжен —
   // поэтому туда мы вообще не заходим, см. redirect выше)
-  setTimeout(() => {
+  clearTimeout(fsTimer);
+  fsTimer = setTimeout(() => {
+    // если плеер уже закрыли — не входим в fullscreen на скрытом элементе
+    if (!modal.classList.contains('open')) return;
     if (modal.requestFullscreen) {
       modal.requestFullscreen().catch(() => {});
     } else if (modal.webkitRequestFullscreen) {
@@ -689,54 +640,53 @@ function showIosFallback(videoId) {
   window.open(`https://drive.google.com/file/d/${videoId}/view`, '_blank');
 }
 
-function closeVideoModal() {
+function closeVideoModal(fromPopstate) {
   const modal  = document.getElementById('videoModal');
   const iframe = document.getElementById('vmIframe');
 
   // Останавливаем видео
-  if (iframe._iosTimer) clearTimeout(iframe._iosTimer);
-  iframe.src = '';
+  clearTimeout(fsTimer);
+  try {
+    if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    else if (document.webkitFullscreenElement && document.webkitExitFullscreen) document.webkitExitFullscreen();
+  } catch(e) {}
+  iframe.src = 'about:blank';
   modal.classList.remove('open');
   stopWatermark();
   stopHeartbeat();
 
-  // Восстанавливаем скролл страницы (iOS fix)
+  // Восстанавливаем скролл страницы (iOS fix) и позицию, на которой был пользователь
   document.body.style.overflow = '';
   document.body.style.position = '';
   document.body.style.width = '';
+  document.body.style.top = '';
+  window.scrollTo(0, savedScrollY);
+
+  // Убираем запись истории, добавленную при открытии плеера
+  if (!fromPopstate && historyPushed) {
+    historyPushed = false;
+    try { history.back(); } catch(e) {}
+  }
+  historyPushed = false;
 
   // Восстанавливаем кнопку Play на карточке
   if (currentModalPart !== null) {
     resetPlayBtn(currentModalPart);
-    // Обновляем подпись
-    const sub = document.getElementById(`sub-${currentModalPart}`);
-    if (sub && watchedParts.has(currentModalPart)) {
-      sub.textContent = '▶ Смотреть снова';
-    }
     currentModalPart = null;
   }
 
-  // Выходим из fullscreen
-  try {
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-  } catch(e) {}
 }
 
-// Закрытие по кнопке "Назад" на Android
+// Закрытие по кнопке "Назад" (Android/браузер): при открытии плеера
+// добавляем запись в историю, при возврате — закрываем плеер, а не уходим со страницы.
 window.addEventListener('popstate', () => {
   const modal = document.getElementById('videoModal');
-  if (modal.classList.contains('open')) closeVideoModal();
+  if (modal.classList.contains('open')) closeVideoModal(true);
 });
 
-// Закрытие при выходе из fullscreen (кнопка Esc)
-document.addEventListener('fullscreenchange', () => {
-  if (!document.fullscreenElement) {
-    const modal = document.getElementById('videoModal');
-    if (modal.classList.contains('open')) {
-      // Не закрываем — просто убираем fullscreen, видео остаётся
-    }
-  }
+// Закрытие плеера по Esc
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('videoModal').classList.contains('open')) closeVideoModal();
 });
 
 // ═══════════════════════════════════════════════════════
@@ -828,25 +778,8 @@ function showPartError(partNum, title, text) {
 // ПОМЕТИТЬ ЧАСТЬ КАК ПРОСМОТРЕННУЮ
 // ═══════════════════════════════════════════════════════
 function markWatched(partNum) {
-  const card  = document.getElementById(`card-${partNum}`);
-  const numEl = document.getElementById(`num-${partNum}`);
-  if (card)  card.classList.add('watched');
-  if (numEl) numEl.textContent = '✓';
-}
-
-// ═══════════════════════════════════════════════════════
-// ПРОГРЕСС
-// ═══════════════════════════════════════════════════════
-function updateProgress() {
-  const done    = watchedParts.size;
-  const pct     = totalParts > 0 ? Math.round(done / totalParts * 100) : 0;
-  document.getElementById('progressFill').style.width  = pct + '%';
-  document.getElementById('progressLabel').textContent =
-    done === 0
-      ? `0 из ${totalParts} частей просмотрено`
-      : done === totalParts
-        ? `✅ Все ${totalParts} части просмотрены!`
-        : `${done} из ${totalParts} частей просмотрено`;
+  const card = document.getElementById(`card-${partNum}`);
+  if (card) card.classList.add('watched');
 }
 
 // ═══════════════════════════════════════════════════════
